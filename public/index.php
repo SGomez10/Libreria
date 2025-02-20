@@ -32,6 +32,14 @@ switch ($request) {
         require __DIR__ . $viewDir . 'profile.php';
         break;  
 
+    case '/logout':
+        require __DIR__ . $viewDir . 'logout.php';
+        break;
+
+    case '/api/books':
+        require __DIR__ . '/ApiController.php';
+        break;
+            
     default:
         http_response_code(404);
         require __DIR__ . $viewDir . '404.php';

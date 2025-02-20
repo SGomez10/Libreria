@@ -56,24 +56,43 @@ class SessionController {
 
     public static function userLogin($email, $password) {
         $controller = new self();
-
+    
         try {
             $sql = "SELECT id, name, email, password FROM usuarios WHERE email = :email";
             $statement = $controller->connection->prepare($sql);
             $statement->bindValue(':email', $email);
             $statement->execute();
             $user = $statement->fetch(PDO::FETCH_OBJ);
-
+    
             if ($user && password_verify($password, $user->password)) {
                 $_SESSION['user_id'] = $user->id;
                 $_SESSION['name'] = $user->name;
                 $_SESSION['email'] = $user->email;
-
+    
+                // Datos para el JWT
+                $header = [
+                    'alg' => 'HS256',
+                    'typ' => 'JWT'
+                ];
+    
+                $payload = [
+                    'user_id' => $user->id,
+                    'username' => $user->name,
+                    'exp' => time() + 3600 // Expira en 1 hora
+                ];
+    
                 // Generar el token y crear la cookie
-                self::generateToken($user);
-
+                $jwt = generarJWT($header, $payload, 'your_secret_key');
+                setcookie("token", $jwt, time() + 3600, "/");
+    
+                // Guardar el token en la base de datos
+                $statement = $controller->connection->prepare("UPDATE usuarios SET token = :token WHERE id = :id");
+                $statement->bindValue(':token', $jwt);
+                $statement->bindValue(':id', $user->id);
+                $statement->execute();
+    
                 // Redirigir al perfil del usuario
-                header('Location: /profile.php');
+                header('Location: /profile');
                 exit();
             } else {
                 $_SESSION['status'] = "Correo electrónico o contraseña incorrectos";
@@ -87,7 +106,7 @@ class SessionController {
         }
     }
 
-    public static function logout() { //Debería tener un parámetro de entrada user(?)
+    public static function logout() {
         // Eliminar el token de la base de datos
         if (isset($_SESSION['user_id'])) {
             $controller = new self();
@@ -95,34 +114,17 @@ class SessionController {
             $statement->bindValue(':id', $_SESSION['user_id']);
             $statement->execute();
         }
-
+    
         // Destruir todas las variables de sesión
         session_unset();
         session_destroy();
-
+    
         // Eliminar la cookie del token
         setcookie("token", "", time() - 3600, "/");
-
+    
         // Redirigir al usuario a la página de inicio de sesión
         header('Location: /login');
         exit();
-    }
-
-
-    private static function generateToken($user) {
-        if (isset($_SESSION['user_id'])) {
-            $token = bin2hex(random_bytes(16));
-            setcookie("token", $token, time() + (86400 * 30), "/");
-            
-            $controller = new self();
-            $statement = (new self)->connection->prepare("UPDATE usuarios SET token = :token WHERE id = :id");
-            $statement->bindValue(':token', $token);
-            $statement->bindValue(':id', $user->id);
-            $statement->execute();
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static function verifyTokenCookie() {
@@ -236,7 +238,5 @@ if (isset($_POST['login_btn'])) {
         exit();
     }
 }
-
-
 
 ?>

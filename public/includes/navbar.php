@@ -58,6 +58,6 @@ session_start();
 
 <script>
 document.getElementById('confirmLogout').addEventListener('click', function() {
-    window.location.href = '/src/controllers/SessionController.php?logout=true';
+    window.location.href = '/logout'; 
 });
 </script>

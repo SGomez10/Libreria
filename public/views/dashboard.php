@@ -1,5 +1,6 @@
 <?php
 $page_title = "Dashboard";
+
 include(__DIR__ . '/../includes/header.php');
 include(__DIR__ . '/../includes/navbar.php');
 ?>
@@ -13,7 +14,9 @@ include(__DIR__ . '/../includes/navbar.php');
                         <h4>User Dashboard</h4>
                     </div>
                     <div class="card-body">
-                        <h4>Datos usuario que haya iniciado sesión</h4>
+                        <h5>Nombre:</h5>
+
+                        
                     </div>
                 </div>
 

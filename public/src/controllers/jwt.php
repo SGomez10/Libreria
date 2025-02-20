@@ -1,27 +1,23 @@
 <?php
-// Clave secreta para firmar el token
-$secret_key = "mi_clave_secreta";
+// filepath: /var/www/libreria.local/public/src/controllers/jwt.php
+
+$secret_key = 'your_secret_key'; // Cambia esto por tu clave secreta
 
 // Función para generar el JWT
 function generarJWT($header, $payload, $secret_key) {
-    // Codificar en Base64 URL el header y el payload
     $header_encoded = base64UrlEncode(json_encode($header));
     $payload_encoded = base64UrlEncode(json_encode($payload));
     
-    // Crear la firma
     $signature = hash_hmac('sha256', "$header_encoded.$payload_encoded", $secret_key, true);
     $signature_encoded = base64UrlEncode($signature);
     
-    // Combinar todos los elementos en el JWT
     return "$header_encoded.$payload_encoded.$signature_encoded";
 }
 
 // Función para verificar el JWT
 function verificarJWT($jwt, $secret_key) {
-    // Separar el token en sus tres partes
     list($header_encoded, $payload_encoded, $signature_encoded) = explode('.', $jwt);
     
-    // Verificar la firma
     $signature = base64UrlEncode(hash_hmac('sha256', "$header_encoded.$payload_encoded", $secret_key, true));
     
     return ($signature === $signature_encoded);
