@@ -1,35 +1,74 @@
 <?php
-// Obtener el ID del libro desde la URL
-$book_id = isset($_GET['id']) ? $_GET['id'] : null;
+
+// Obtener el ID del libro desde la URL 
+$request_uri = $_SERVER['REQUEST_URI']; // Obtiene la ruta completa 
+$pattern = '/^\/book_details\/(\d+)$/'; // Expresión regular para extraer el ID
+preg_match($pattern, $request_uri, $matches); // Busca el ID en la ruta
+
+$book_id = $matches[1] ?? null; // Extrae el ID o asigna null si no se encuentra
 $page_title = "Detalles del libro";
 
 if ($book_id) {
-    // Realizar una solicitud a la API para obtener los detalles del libro
-    $api_url = "http://libreria.local/public/src/controllers/ApiController.php?id=" . $book_id;
-    $response = file_get_contents($api_url);
-    $book = json_decode($response, true);
-
-    if (isset($book['message'])) {
-        // Si hay un mensaje de error, mostrarlo
-        echo "<p>" . htmlspecialchars($book['message']) . "</p>";
-    } else {
-        // Mostrar los detalles del libro
-        include(__DIR__ . '/../includes/header.php');
-        include(__DIR__ . '/../includes/navbar.php');
-        ?>
-        <div class="container mt-5">
-            <h1><?php echo htmlspecialchars($book['title']); ?></h1>
-            <img src="<?php echo htmlspecialchars($book['image_url']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>" class="img-fluid">
-            <p><strong>Precio:</strong> <?php echo htmlspecialchars($book['price']); ?></p>
-            <p><strong>En stock:</strong> <?php echo htmlspecialchars($book['in_stock']); ?></p>
-            <p><strong>Género:</strong> <?php echo htmlspecialchars($book['genre']); ?></p>
-            <p><strong>Rating:</strong> <?php echo htmlspecialchars($book['rating']); ?></p>
-            <p><strong>Descripción:</strong> <?php echo htmlspecialchars($book['description']); ?></p>
+    // Mostrar los detalles del libro
+    include(__DIR__ . '/../includes/header.php');
+    include(__DIR__ . '/../includes/navbar.php');
+    ?>
+    <div id="book-details" class="container mt-5">
+        <!-- Primera fila: Imagen y detalles -->
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img id="book-image" src="" alt="" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
+            </div>
+            <div class="col-md-8">
+                <h1 id="book-title" class="mb-3"></h1>
+                <div class="mb-3">
+                    <p><strong>Género:</strong> <span id="book-genre" class="badge bg-secondary"></span></p>
+                    <p><strong>Rating:</strong> <span id="book-rating" class="badge bg-warning text-dark"></span></p>
+                    <p><strong>Precio:</strong> <span id="book-price" class="text-success h4"></span></p>
+                    <p><strong>En stock:</strong> <span id="book-stock" class="badge bg-success"></span></p>
+                </div>
+            </div>
         </div>
-        <?php
-        include(__DIR__ . '/../includes/footer.php');
-    }
-} else {
-    echo "<p>ID de libro no proporcionado.</p>";
+
+        <!-- Segunda fila: Descripción -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4>Descripción:</h4>
+                <p id="book-description" class="text-muted"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookId = <?php echo json_encode($book_id); ?>;
+        if (bookId) {
+            fetch(`/api/books/${bookId}`)
+                .then(response => response.json())
+                .then(book => {
+                    if (book) {
+                        document.getElementById('book-title').textContent = book.title;
+                        document.getElementById('book-image').src = book.image_url;
+                        document.getElementById('book-image').alt = book.title;
+                        document.getElementById('book-genre').textContent = book.genre;
+                        document.getElementById('book-rating').textContent = book.rating;
+                        document.getElementById('book-price').textContent = `${book.price}`;
+                        document.getElementById('book-stock').textContent = book.in_stock ? 'Disponible' : 'Agotado';
+                        document.getElementById('book-description').textContent = book.description;
+                    } else {
+                        document.getElementById('book-details').innerHTML = '<p class="text-danger">Libro no encontrado.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener los detalles del libro:', error);
+                    document.getElementById('book-details').innerHTML = '<p class="text-danger">Error al obtener los detalles del libro.</p>';
+                });
+        } else {
+            document.getElementById('book-details').innerHTML = '<p class="text-danger">ID de libro no proporcionado.</p>';
+        }
+    });
+    </script>
+    <?php
+    include(__DIR__ . '/../includes/footer.php');
 }
 ?>

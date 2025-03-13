@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 $request = $_SERVER['REQUEST_URI'];
 $viewDir = '/views/';
@@ -6,67 +9,120 @@ $apiPrefix = '/api/';
 
 if (strpos($request, $apiPrefix) === 0) {
     // Rutas de la API
-    require __DIR__ . '/src/controllers/ApiController.php';
+    require __DIR__ . '/src/controllers/ProjectController.php';
     $ProjectController = new ProjectController();
 
-    switch ($request) {
-        case '/api/books':
-            echo json_encode(["message" => "Funciona correctamente"]);
-            break;
+    // Elimina el prefijo de la API
+    $route = substr($request, strlen($apiPrefix));
 
-        default:
+    // Divide la ruta en partes
+    $parts = explode('/', $route);
+
+    // Manejo de rutas de la API
+    if ($parts[0] === 'books') {
+        if (isset($parts[1])) {
+            if (is_numeric($parts[1])) {
+                // Ruta: /api/books/{id}
+                $book_id = (int)$parts[1];
+                if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                    // Manejo de la solicitud DELETE
+                    require __DIR__ . '/src/controllers/ApiController.php';
+                } else {
+                    $book = $ProjectController->getBookById($book_id);
+                    if ($book) {
+                        echo json_encode($book);
+                    } else {
+                        header("HTTP/1.0 404 Not Found");
+                        echo json_encode(["message" => "Libro no encontrado"]);
+                    }
+                }
+            } elseif ($parts[1] === 'genre' && isset($parts[2])) {
+                // Ruta: /api/books/genre/{genre}
+                $genre = urldecode($parts[2]);
+                $books = $ProjectController->getBooks(1, 10, $genre);
+                echo json_encode($books);
+            } else {
+                // Ruta no válida
+                header("HTTP/1.0 404 Not Found");
+                echo json_encode(["error" => "Ruta de API no encontrada"]);
+            }
+        } else {
+            // Ruta: /api/books
+            echo json_encode($ProjectController->getBooks());
+        }
+    } elseif ($parts[0] === 'books-dashboard') {
+        // Ruta: /api/books-dashboard
+        $books = $ProjectController->getBooksForDashboard();
+        echo json_encode($books);
+    } elseif ($parts[0] === 'user') {
+        if (isset($parts[1]) && is_numeric($parts[1])) {
+            // Ruta: /api/user/{id}
+            $user_id = (int)$parts[1];
+            $user = $ProjectController->getUserById($user_id);
+            if ($user) {
+                echo json_encode($user);
+            } else {
+                header("HTTP/1.0 404 Not Found");
+                echo json_encode(["message" => "Usuario no encontrado"]);
+            }
+        } else {
+            // Ruta no válida
             header("HTTP/1.0 404 Not Found");
             echo json_encode(["error" => "Ruta de API no encontrada"]);
-            break;
+        }
+    } else {
+        // Ruta no válida
+        header("HTTP/1.0 404 Not Found");
+        echo json_encode(["error" => "Ruta de API no encontrada"]);
     }
 } else {
     // Rutas de vistas
     $path = parse_url($request, PHP_URL_PATH);
-    switch ($path) {
-        case '':
-        case '/':
-            require __DIR__ . $viewDir . 'home.php';
-            break;
+    $pathParts = explode('/', $path);
 
-        case '/login':
-            require __DIR__ . $viewDir . 'login.php';
-            break;
+    if ($pathParts[1] === 'catalog') {
+        // Ruta: /catalog/{género}
+        $selectedGenre = isset($pathParts[2]) ? urldecode($pathParts[2]) : '';
+        include(__DIR__ . '/views/catalog.php');
+    } elseif ($pathParts[1] === 'book_details' && isset($pathParts[2]) && is_numeric($pathParts[2])) {
+        // Ruta: /book_details/{id}
+        $book_id = (int)$pathParts[2];
+        include(__DIR__ . '/views/book_details.php');
+    } else {
+        // Otras rutas de vistas
+        switch ($path) {
+            case '':
+            case '/':
+                include(__DIR__ . '/views/home.php');
+                break;
+            case '/about':
+                include(__DIR__ . '/views/about.php');
+                break;
+            case '/contact':
+                include(__DIR__ . '/views/contact.php');
+                break;
+            case '/dashboard':
+                include(__DIR__ . '/views/dashboard.php');
+                break;
 
-        case '/register':
-            require __DIR__ . $viewDir . 'register.php';
-            break;
+            case '/login':
+                include(__DIR__ . '/views/login.php');
+                break;
+            case '/register':
+                include(__DIR__ . '/views/register.php');
+                break;
 
-        case '/dashboard':      
-            require __DIR__ . $viewDir . 'dashboard.php';
-            break;  
-            
-        case '/about':    
-            require __DIR__ . $viewDir . 'about.php';
-            break;
-            
-        case '/faq':
-            require __DIR__ . $viewDir . 'faq.php';
-            break;
-            
-        case '/profile':
-            require __DIR__ . $viewDir . 'profile.php';
-            break;  
+            case '/faq':
+                include(__DIR__ . '/views/faq.php');
+                break;
 
-        case '/logout':
-            require __DIR__ . $viewDir . 'logout.php';
-            break;
+            case '/profile':
+                include(__DIR__ . '/views/profile.php');
+                break;
 
-        case '/catalog':
-            require __DIR__ . $viewDir . 'catalog.php';
-            break;
-
-        case '/book_details.php':
-            require __DIR__ . $viewDir . 'book_details.php';
-            break;
-
-        default:
-            require __DIR__ . $viewDir . '404.php';
-            break;
+            default:
+                include(__DIR__ . '/views/home.php');
+                break;
+        }
     }
 }
-?>

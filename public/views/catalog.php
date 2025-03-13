@@ -1,30 +1,115 @@
 <?php
+
 $page_title = "Catálogo";
 include(__DIR__ . '/../includes/header.php');
 include(__DIR__ . '/../includes/navbar.php');
 
 require_once(__DIR__ . '/../src/controllers/ProjectController.php');
 $controller = new ProjectController();
-$books = $controller->getBooks();
+
+// Obtener la ruta de la URL
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$pathParts = explode('/', $path);
+
+// Extraer el género y la página
+$selectedGenre = '';
+$current_page = 1;
+
+if ($pathParts[1] === 'catalog') {
+    if (isset($pathParts[2]) && $pathParts[2] !== 'page') {
+        $selectedGenre = urldecode($pathParts[2]); // Género
+    }
+    if (isset($pathParts[3]) && $pathParts[3] === 'page' && isset($pathParts[4])) {
+        $current_page = (int)$pathParts[4]; // Número de página
+    } elseif (isset($pathParts[2]) && $pathParts[2] === 'page' && isset($pathParts[3])) {
+        $current_page = (int)$pathParts[3]; // Número de página (sin género)
+    }
+}
+
+// Validar el género
+if (!empty($selectedGenre) && !$controller->isValidGenre($selectedGenre)) {
+    echo "<div class='alert alert-warning'>El género seleccionado no existe.</div>";
+    $selectedGenre = ''; // Limpiar el género para mostrar todos los libros
+}
+
+// Obtener los libros para la página actual, filtrados por género
+$per_page = 20; // Número de libros por página
+$books = $controller->getBooks($current_page, $per_page, $selectedGenre);
+
+// Obtener el total de libros filtrados por género
+$total_books = $controller->getTotalBooks($selectedGenre);
+$total_pages = ceil($total_books / $per_page);
+
+// Validar el número de página
+$current_page = max(1, min($current_page, $total_pages));
 
 ?>
 <div class="container mt-5">
     <h1 class="mb-4">Catálogo de Libros</h1>
-    <div class="row row-cols-1 row-cols-md-5 g-4">
+
+    <!-- Select para filtrar por género -->
+    <form method="GET" action="">
+        <div class="mb-3">
+            <label for="genre" class="form-label">Filtrar por género:</label>
+            <select class="form-select w-auto" id="genre" name="genre" onchange="window.location.href = '/catalog/' + encodeURIComponent(this.value);">
+                <option value="">Todos los géneros</option>
+                <?php
+                $genres = $controller->getGenres();
+                foreach ($genres as $genre): ?>
+                    <option value="<?php echo htmlspecialchars($genre); ?>" <?php echo ($selectedGenre == $genre) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($genre); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </form>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
         <?php foreach ($books as $book): ?>
             <div class="col">
-                <div class="card h-100 d-flex flex-column">
-                    <img src="<?php echo htmlspecialchars($book['image_url']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($book['title']); ?>">
-                    <div class="card-body flex-grow-1">
-                        <h5 class="card-title"><?php echo htmlspecialchars($book['title']); ?></h5>
-                        <p class="card-text"><strong>Precio:</strong> <?php echo htmlspecialchars($book['price']); ?></p>
+                <div class="card h-100 d-flex flex-column p-1">
+                    <img src="<?php echo htmlspecialchars($book['image_url']); ?>" class="card-img-top img-fluid" alt="<?php echo htmlspecialchars($book['title']); ?>">
+                    <div class="card-body flex-grow-1 p-2">
+                        <h5 class="card-title" style="font-size: 0.9rem;"><?php echo htmlspecialchars($book['title']); ?></h5>
+                        <p class="card-text" style="font-size: 0.8rem;"><strong>Precio:</strong> <?php echo htmlspecialchars($book['price']); ?></p>
                     </div>
-                    <div class="card-footer text-center border-0 p-0">
-                        <a href="book_details.php?id=<?php echo htmlspecialchars($book['id']); ?>" class="btn btn-primary w-100 rounded-0">Más información</a>
+                    <div class="card-footer text-center border-0 p-1">
+                        <a href="/book_details/<?php echo htmlspecialchars($book['id']); ?>" class="btn btn-primary btn-sm w-100 rounded-0">Más información</a>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
+
+    <!-- Paginación -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <?php if ($current_page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="/catalog/<?php echo !empty($selectedGenre) ? urlencode($selectedGenre) . '/' : ''; ?>page/<?php echo $current_page - 1; ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <?php
+            $start = max(1, $current_page - 2);
+            $end = min($total_pages, $current_page + 2);
+
+            for ($i = $start; $i <= $end; $i++): ?>
+                <li class="page-item <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="/catalog/<?php echo !empty($selectedGenre) ? urlencode($selectedGenre) . '/' : ''; ?>page/<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if ($current_page < $total_pages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="/catalog/<?php echo !empty($selectedGenre) ? urlencode($selectedGenre) . '/' : ''; ?>page/<?php echo $current_page + 1; ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
 </div>
 <?php include(__DIR__ . '/../includes/footer.php'); ?>

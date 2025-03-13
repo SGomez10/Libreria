@@ -11,12 +11,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case "GET":
-        if (isset($_GET['id'])) {
-            $book = $controller->getBookById($_GET['id']);
-            echo json_encode($book ? $book : ["message" => "Libro no encontrado"]);
-        } else {
-            echo json_encode($controller->getBooks());
-        }
+        // La lógica GET ya se maneja en index.php
+        http_response_code(405);
+        echo json_encode(["message" => "Método GET no permitido directamente en ApiController"]);
         break;
 
     case "POST":
