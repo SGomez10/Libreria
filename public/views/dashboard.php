@@ -122,6 +122,26 @@ include(__DIR__ . '/../includes/navbar.php');
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nueva Card para mostrar libros -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Lista de Libros</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search Bar para libros -->
+                        <div class="mb-4">
+                            <form class="d-flex" role="search">
+                                <input class="form-control me-2" type="search" placeholder="Buscar libro por su nombre" aria-label="Buscar" id="search-input">
+                                <button class="btn btn-outline-success" type="button" id="search-button">Buscar</button>
+                            </form>
+                        </div>
 
                         <!-- Tabla para listar libros -->
                         <div class="table-responsive"> <!-- Hace que la tabla sea responsive -->
@@ -129,7 +149,7 @@ include(__DIR__ . '/../includes/navbar.php');
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Título</th>
+                                        <th style="max-width: 200px;">Título</th> <!-- Limitar el ancho del título -->
                                         <th>Precio</th>
                                         <th>En stock</th>
                                         <th>Rating</th>
@@ -139,42 +159,11 @@ include(__DIR__ . '/../includes/navbar.php');
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <!-- Ejemplo de filas de libros -->
-                                    <tr>
-                                        <td>1</td>
-                                        <td>El Principito</td>
-                                        <td>$15.99</td>
-                                        <td>Sí</td>
-                                        <td>Four</td>
-                                        <td><img src="https://example.com/image1.jpg" alt="El Principito" class="img-fluid" style="max-width: 50px;"></td>
-                                        <td>Un clásico de la literatura infantil.</td>
-                                        <td>Ficción</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Cien Años de Soledad</td>
-                                        <td>$20.50</td>
-                                        <td>No</td>
-                                        <td>Five</td>
-                                        <td><img src="https://example.com/image2.jpg" alt="Cien Años de Soledad" class="img-fluid" style="max-width: 50px;"></td>
-                                        <td>Una obra maestra del realismo mágico.</td>
-                                        <td>Realismo Mágico</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                    <!-- Puedes agregar más filas aquí -->
+                                <tbody id="books-table-body">
+                                    <!-- Filas de libros se llenarán automáticamente -->
                                 </tbody>
                             </table>
                         </div>
-
-                        
                     </div>
                 </div>
             </div>
@@ -186,6 +175,63 @@ include(__DIR__ . '/../includes/navbar.php');
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    //Intento de search bar
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('search-button').addEventListener('click', async function() {
+            const query = document.getElementById('search-input').value;
+            if (query.trim() === "") {
+                alert("Por favor, ingresa un término de búsqueda.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/search-books?query=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                const books = await response.json();
+                const tbody = document.getElementById('books-table-body');
+                tbody.innerHTML = ''; // Limpiar el contenido existente
+
+                if (books.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9">No se encontraron libros.</td></tr>`;
+                    return;
+                }
+
+                books.forEach(book => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>
+                        <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
+                            ${book.title}
+                        </div>
+                    </td>
+                    <td>${book.price}</td>
+                    <td>${book.in_stock ? 'Sí' : 'No'}</td>
+                    <td>${book.rating}</td>
+                    <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
+                    <td>
+                        <div class="description-box" style="max-height: 5em; overflow-y: auto;">
+                            ${book.description}
+                        </div>
+                    </td>
+                    <td>${book.genre}</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center">Editar</button>
+                            <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})">Eliminar</button>
+                        </div>
+                    </td>
+                `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un error al realizar la búsqueda');
+            }
+        });
+    });
 
     //Funcion para eliminar un libro
     function deleteBook(bookId) {
@@ -215,40 +261,6 @@ include(__DIR__ . '/../includes/navbar.php');
         }
     }
 
-    //Recoger libros para mostrarlos en la fila.
-    async function fetchBooks() {
-        try {
-            const response = await fetch('/api/books-dashboard');
-            if (!response.ok) {
-                throw new Error("Error al obtener los datos de la API");
-            }
-            const books = await response.json();
-            const tbody = document.getElementById('books-table-body');
-            tbody.innerHTML = ''; // Limpiar el contenido existente
-
-            books.forEach(book => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                        <td>${book.id}</td>
-                        <td>${book.title}</td>
-                        <td>${book.price}</td>
-                        <td>${book.in_stock ? 'Sí' : 'No'}</td>
-                        <td>${book.rating}</td>
-                        <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
-                        <td>${book.description}</td>
-                        <td>${book.genre}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Editar</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteBook(${book.id})">Eliminar</button>
-                        </td>
-                    `;
-                tbody.appendChild(row);
-            });
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
     // Función para convertir el rating de texto a número
     function convertirRatingATexto(rating) {
         const ratingMap = {
@@ -264,11 +276,44 @@ include(__DIR__ . '/../includes/navbar.php');
     // Función para obtener datos de la API
     async function fetchData() {
         try {
-            const response = await fetch('/api/books-dashboard'); // Se usa esta y no /api/books por problemas por la paginación
+            const response = await fetch('/api/books-dashboard');
             if (!response.ok) {
                 throw new Error("Error al obtener los datos de la API");
             }
-            return await response.json();
+            const books = await response.json();
+            const tbody = document.getElementById('books-table-body');
+            tbody.innerHTML = ''; // Limpiar el contenido existente
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${book.id}</td>
+                        <td>
+                            <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
+                                ${book.title}
+                            </div>
+                        </td>
+                        <td>${book.price}</td>
+                        <td>${book.in_stock ? 'Sí' : 'No'}</td>
+                        <td>${book.rating}</td>
+                        <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
+                        <td>
+                             <div class="description-box" style="max-height: 5em; overflow-y: auto;">
+                                ${book.description}
+                            </div>
+                        </td>
+                        <td>${book.genre}</td>
+                        <td>
+                            <div class="d-flex gap-2"> <!-- Contenedor flex para los botones -->
+                                <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center">Editar</button>
+                                <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})">Eliminar</button>
+                            </div>
+                        </td>
+                    `;
+                tbody.appendChild(row);
+            });
+
+            return books; // Retornar los datos para que el resto del código pueda usarlos
         } catch (error) {
             console.error("Error:", error);
             return [];

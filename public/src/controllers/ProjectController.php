@@ -23,52 +23,55 @@ class ProjectController
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getGenres() {
+    public function getGenres()
+    {
         $sql = "SELECT DISTINCT genre FROM books"; // Obtener todos los géneros únicos
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_COLUMN); // Retornar un array de géneros
     }
-    
-    public function isValidGenre($genre) {
+
+    public function isValidGenre($genre)
+    {
         $genres = $this->getGenres(); // Obtener la lista de géneros
         return in_array($genre, $genres); // Verificar si el género existe
     }
 
     // Obtener libros paginados con filtro de género (mantener este método para el catálogo)
-    public function getBooks($page = 1, $perPage = 10, $genre = '') {
+    public function getBooks($page = 1, $perPage = 10, $genre = '')
+    {
         // Validar parámetros
         $page = max(1, (int)$page); // Asegurar que $page sea al menos 1
         $perPage = max(1, (int)$perPage); // Asegurar que $perPage sea al menos 1
         $offset = ($page - 1) * $perPage;
-    
+
         // Validar el género
         if (!empty($genre) && !$this->isValidGenre($genre)) {
             return []; // Retorna un array vacío si el género no es válido
         }
-    
+
         $sql = "SELECT * FROM books";
-        
+
         // Añadir filtro de género si se proporciona
         if (!empty($genre)) {
             $sql .= " WHERE genre = :genre";
         }
-        
+
         $sql .= " LIMIT :perPage OFFSET :offset";
-        
+
         $stmt = $this->pdo->prepare($sql);
-        
+
         // Bindear el parámetro de género si se proporciona
         if (!empty($genre)) {
             $stmt->bindValue(':genre', $genre, PDO::PARAM_STR);
         }
-        
+
         $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        
+
         if (!$stmt->execute()) {
             return []; // Retorna un array vacío en caso de error
         }
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -76,23 +79,23 @@ class ProjectController
     public function getTotalBooks($genre = '')
     {
         $sql = "SELECT COUNT(*) as total FROM books";
-        
+
         // Añadir filtro de género si se proporciona
         if (!empty($genre)) {
             $sql .= " WHERE genre = :genre";
         }
-        
+
         $stmt = $this->pdo->prepare($sql);
-        
+
         // Bindear el parámetro de género si se proporciona
         if (!empty($genre)) {
             $stmt->bindValue(':genre', $genre, PDO::PARAM_STR);
         }
-        
+
         if (!$stmt->execute()) {
             return 0; // Si hay un error en la ejecución, retornar 0
         }
-        
+
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];
     }
@@ -109,8 +112,27 @@ class ProjectController
         if (!$stmt->execute([$id])) {
             return null; // Si hay un error en la ejecución, retornar null
         }
-        
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    //Obtener un libro por título
+    public function searchBooks($query)
+    {
+        try {
+            $sql = "SELECT * FROM books WHERE title LIKE :title";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':title', '%' . $query . '%', PDO::PARAM_STR);
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar la consulta");
+            }
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("Consulta ejecutada correctamente. Resultados: " . print_r($results, true));
+            return $results;
+        } catch (Exception $e) {
+            error_log("Error en searchBooks: " . $e->getMessage());
+            return []; // Retorna un array vacío en caso de error
+        }
     }
 
     // Agregar un nuevo libro

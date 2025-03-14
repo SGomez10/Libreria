@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 $request = $_SERVER['REQUEST_URI'];
 $viewDir = '/views/';
@@ -24,17 +21,12 @@ if (strpos($request, $apiPrefix) === 0) {
             if (is_numeric($parts[1])) {
                 // Ruta: /api/books/{id}
                 $book_id = (int)$parts[1];
-                if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-                    // Manejo de la solicitud DELETE
-                    require __DIR__ . '/src/controllers/ApiController.php';
+                $book = $ProjectController->getBookById($book_id);
+                if ($book) {
+                    echo json_encode($book);
                 } else {
-                    $book = $ProjectController->getBookById($book_id);
-                    if ($book) {
-                        echo json_encode($book);
-                    } else {
-                        header("HTTP/1.0 404 Not Found");
-                        echo json_encode(["message" => "Libro no encontrado"]);
-                    }
+                    header("HTTP/1.0 404 Not Found");
+                    echo json_encode(["message" => "Libro no encontrado"]);
                 }
             } elseif ($parts[1] === 'genre' && isset($parts[2])) {
                 // Ruta: /api/books/genre/{genre}
@@ -54,6 +46,26 @@ if (strpos($request, $apiPrefix) === 0) {
         // Ruta: /api/books-dashboard
         $books = $ProjectController->getBooksForDashboard();
         echo json_encode($books);
+    } elseif ($parts[0] === 'search-books') {
+        // Ruta: /api/search-books
+        if (isset($_GET['query'])) {
+            $query = $_GET['query'];
+
+            // Primero, obtener todos los libros usando getBooksForDashboard
+            $allBooks = $ProjectController->getBooksForDashboard();
+
+            // Luego, aplicar la búsqueda solo en el campo "title"
+            $filteredBooks = array_filter($allBooks, function ($book) use ($query) {
+                // Buscar solo en el título
+                return stripos($book['title'], $query) !== false;
+            });
+
+            // Retornar los libros filtrados
+            echo json_encode(array_values($filteredBooks)); // Reindexar el array
+        } else {
+            // Si no se proporciona una consulta, retornar un array vacío
+            echo json_encode([]);
+        }
     } elseif ($parts[0] === 'user') {
         if (isset($parts[1]) && is_numeric($parts[1])) {
             // Ruta: /api/user/{id}
@@ -104,22 +116,18 @@ if (strpos($request, $apiPrefix) === 0) {
             case '/dashboard':
                 include(__DIR__ . '/views/dashboard.php');
                 break;
-
             case '/login':
                 include(__DIR__ . '/views/login.php');
                 break;
             case '/register':
                 include(__DIR__ . '/views/register.php');
                 break;
-
             case '/faq':
                 include(__DIR__ . '/views/faq.php');
                 break;
-
             case '/profile':
                 include(__DIR__ . '/views/profile.php');
                 break;
-
             default:
                 include(__DIR__ . '/views/home.php');
                 break;
