@@ -8,7 +8,7 @@
     <title>
         <?php if (isset($page_title)) {
             echo "$page_title";
-        } ?> - Logo Name
+        } ?>
     </title>
     <style>
         html,

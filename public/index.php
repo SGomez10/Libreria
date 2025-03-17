@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 $request = $_SERVER['REQUEST_URI'];
 $viewDir = '/views/';
 $apiPrefix = '/api/';
@@ -114,7 +116,13 @@ if (strpos($request, $apiPrefix) === 0) {
                 include(__DIR__ . '/views/contact.php');
                 break;
             case '/dashboard':
-                include(__DIR__ . '/views/dashboard.php');
+                if (isset($_SESSION['user_id'])) {
+                    include(__DIR__ . '/views/dashboard.php');
+                } else {
+                    // Redirigir al usuario a la página de inicio de sesión
+                    header('Location: /login');
+                    exit();
+                }
                 break;
             case '/login':
                 include(__DIR__ . '/views/login.php');
@@ -128,9 +136,14 @@ if (strpos($request, $apiPrefix) === 0) {
             case '/profile':
                 include(__DIR__ . '/views/profile.php');
                 break;
-            default:
-                include(__DIR__ . '/views/home.php');
+
+            case '/info':
+                include(__DIR__ . '/views/info.php');
                 break;
+
+            default:
+                http_response_code(404);
+                require __DIR__ . $viewDir . '404.php';
         }
     }
 }

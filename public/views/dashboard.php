@@ -1,5 +1,31 @@
 <?php
-$page_title = "Dashboard";
+
+// Obtener el idioma seleccionado de la URL, si está presente
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang']; // Guardar el idioma en la sesión
+}
+
+// Usar el idioma de la sesión o el predeterminado si no está configurado
+$locale = isset($_SESSION['lang']) ? $_SESSION['lang'] . '.UTF-8' : 'en_US.UTF-8';
+
+// Configura el locale y el dominio de traducción
+putenv("LANG=$locale");
+putenv("LANGUAGE=$locale");
+setlocale(LC_ALL, $locale);
+$domain = 'messages';
+textdomain($domain);
+
+// Verificar la ruta de traducciones
+$ruta = realpath(__DIR__ . '/../../locales');
+if ($ruta === false) {
+    error_log("Error: No se pudo encontrar la carpeta 'locales'.");
+} else {
+    bindtextdomain($domain, $ruta);
+    error_log("Ruta de traducciones configurada: " . $ruta);
+}
+bind_textdomain_codeset($domain, 'UTF-8');
+
+$page_title = _("Dashboard");
 
 include(__DIR__ . '/../includes/header.php');
 include(__DIR__ . '/../includes/navbar.php');
@@ -7,13 +33,11 @@ include(__DIR__ . '/../includes/navbar.php');
 
 <div class="py-5">
     <div class="container">
-        <!-- Grid de 2 columnas -->
         <div class="row">
-            <!-- Primera columna: Libros por género -->
             <div class="col-md-6">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>Libros por género</h5>
+                        <h5><?php echo _("Libros por género"); ?></h5>
                     </div>
                     <div class="card-body">
                         <canvas id="chartGeneros" style="min-height: 300px;"></canvas>
@@ -21,11 +45,10 @@ include(__DIR__ . '/../includes/navbar.php');
                 </div>
             </div>
 
-            <!-- Segunda columna: Distribución de stock -->
             <div class="col-md-6">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>Distribución de stock</h5>
+                        <h5><?php echo _("Distribución de stock"); ?></h5>
                     </div>
                     <div class="card-body">
                         <canvas id="chartStock" style="min-height: 300px;"></canvas>
@@ -33,11 +56,10 @@ include(__DIR__ . '/../includes/navbar.php');
                 </div>
             </div>
 
-            <!-- Tercera columna: Libros mejor valorados -->
             <div class="col-md-6">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>Libros mejor valorados</h5>
+                        <h5><?php echo _("Libros mejor valorados"); ?></h5>
                     </div>
                     <div class="card-body">
                         <canvas id="chartRating" style="min-height: 300px;"></canvas>
@@ -45,11 +67,10 @@ include(__DIR__ . '/../includes/navbar.php');
                 </div>
             </div>
 
-            <!-- Cuarta columna: Precio promedio por género -->
             <div class="col-md-6">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5>Precio promedio por género</h5>
+                        <h5><?php echo _("Precio promedio por género"); ?></h5>
                     </div>
                     <div class="card-body">
                         <canvas id="chartPrecioGenero" style="min-height: 300px;"></canvas>
@@ -58,66 +79,60 @@ include(__DIR__ . '/../includes/navbar.php');
             </div>
         </div>
 
-        <!-- Panel de Administración -->
         <div class="row mt-5">
             <div class="col-md-12">
-                <h2>Panel de Administración</h2>
+                <h2><?php echo _("Panel de Administración"); ?></h2>
                 <div class="card">
                     <div class="card-header">
-                        <h5>Gestión de Libros</h5>
+                        <h5><?php echo _("Gestión de Libros"); ?></h5>
                     </div>
                     <div class="card-body">
-                        <!-- Formulario para añadir libros -->
                         <form>
-                            <div class="row"> <!-- Fila para organizar los campos en columnas -->
-                                <!-- Columna 1 -->
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
-                                        <label for="title">Título del Libro</label>
+                                        <label for="title"><?php echo _("Título del Libro"); ?></label>
                                         <input type="text" class="form-control" id="title" name="title" required>
                                     </div>
                                     <div class="form-group mb-4">
-                                        <label for="price">Precio</label>
+                                        <label for="price"><?php echo _("Precio"); ?></label>
                                         <input type="number" step="0.01" class="form-control" id="price" name="price" required>
                                     </div>
                                     <div class="form-group mb-4">
-                                        <label for="in_stock">En stock</label>
+                                        <label for="in_stock"><?php echo _("En stock"); ?></label>
                                         <select class="form-control" id="in_stock" name="in_stock" required>
                                             <option value="1">Sí</option>
                                             <option value="0">No</option>
                                         </select>
                                     </div>
                                 </div>
-                                <!-- Columna 2 -->
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
-                                        <label for="rating">Rating</label>
+                                        <label for="rating"><?php echo _("Rating"); ?></label>
                                         <input type="text" class="form-control" id="rating" name="rating" required>
                                     </div>
                                     <div class="form-group mb-4">
-                                        <label for="image_url">URL de la imagen</label>
+                                        <label for="image_url"><?php echo _("URL de la imagen"); ?></label>
                                         <input type="url" class="form-control" id="image_url" name="image_url" required>
                                     </div>
                                     <div class="form-group mb-4">
-                                        <label for="genre">Género</label>
+                                        <label for="genre"><?php echo _("Género"); ?></label>
                                         <input type="text" class="form-control" id="genre" name="genre" required>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Descripción (ocupa toda la fila) -->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group mb-4">
-                                        <label for="description">Descripción</label>
+                                        <label for="description"><?php echo _("Descripción"); ?></label>
                                         <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Botón de submit -->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mt-4">
-                                        <button type="submit" class="btn btn-primary">Añadir Libro</button>
+                                        <button type="submit" class="btn btn-primary"><?php echo _("Añadir Libro"); ?></button>
                                     </div>
                                 </div>
                             </div>
@@ -127,40 +142,36 @@ include(__DIR__ . '/../includes/navbar.php');
             </div>
         </div>
 
-        <!-- Nueva Card para mostrar libros -->
         <div class="row mt-5">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Lista de Libros</h5>
+                        <h5><?php echo _("Lista de Libros"); ?></h5>
                     </div>
                     <div class="card-body">
-                        <!-- Search Bar para libros -->
                         <div class="mb-4">
                             <form class="d-flex" role="search">
-                                <input class="form-control me-2" type="search" placeholder="Buscar libro por su nombre" aria-label="Buscar" id="search-input">
-                                <button class="btn btn-outline-success" type="button" id="search-button">Buscar</button>
+                                <input class="form-control me-2" type="search" placeholder="<?php echo _("Buscar libro por su nombre"); ?>" aria-label="Buscar" id="search-input">
+                                <button class="btn btn-outline-success" type="button" id="search-button"><?php echo _("Buscar"); ?></button>
                             </form>
                         </div>
 
-                        <!-- Tabla para listar libros -->
-                        <div class="table-responsive"> <!-- Hace que la tabla sea responsive -->
+                        <div class="table-responsive">
                             <table class="table mt-4">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th style="max-width: 200px;">Título</th> <!-- Limitar el ancho del título -->
-                                        <th>Precio</th>
-                                        <th>En stock</th>
-                                        <th>Rating</th>
-                                        <th>Imagen</th>
-                                        <th>Descripción</th>
-                                        <th>Género</th>
-                                        <th>Acciones</th>
+                                        <th style="max-width: 200px;"><?php echo _("Título"); ?></th>
+                                        <th><?php echo _("Precio"); ?></th>
+                                        <th><?php echo _("En stock"); ?></th>
+                                        <th><?php echo _("Rating"); ?></th>
+                                        <th><?php echo _("Imagen"); ?></th>
+                                        <th><?php echo _("Descripción"); ?></th>
+                                        <th><?php echo _("Género"); ?></th>
+                                        <th><?php echo _("Acciones"); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody id="books-table-body">
-                                    <!-- Filas de libros se llenarán automáticamente -->
                                 </tbody>
                             </table>
                         </div>
@@ -171,16 +182,14 @@ include(__DIR__ . '/../includes/navbar.php');
     </div>
 </div>
 
-<!-- Incluir Chart.js desde un CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    //Intento de search bar
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('search-button').addEventListener('click', async function() {
             const query = document.getElementById('search-input').value;
             if (query.trim() === "") {
-                alert("Por favor, ingresa un término de búsqueda.");
+                alert("<?php echo _("Por favor, ingresa un término de búsqueda."); ?>");
                 return;
             }
 
@@ -191,51 +200,50 @@ include(__DIR__ . '/../includes/navbar.php');
                 }
                 const books = await response.json();
                 const tbody = document.getElementById('books-table-body');
-                tbody.innerHTML = ''; // Limpiar el contenido existente
+                tbody.innerHTML = '';
 
                 if (books.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="9">No se encontraron libros.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="9"><?php echo _("No se encontraron libros."); ?></td></tr>`;
                     return;
                 }
 
                 books.forEach(book => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                    <td>${book.id}</td>
-                    <td>
-                        <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
-                            ${book.title}
-                        </div>
-                    </td>
-                    <td>${book.price}</td>
-                    <td>${book.in_stock ? 'Sí' : 'No'}</td>
-                    <td>${book.rating}</td>
-                    <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
-                    <td>
-                        <div class="description-box" style="max-height: 5em; overflow-y: auto;">
-                            ${book.description}
-                        </div>
-                    </td>
-                    <td>${book.genre}</td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center">Editar</button>
-                            <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})">Eliminar</button>
-                        </div>
-                    </td>
-                `;
+                        <td>${book.id}</td>
+                        <td>
+                            <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
+                                ${book.title}
+                            </div>
+                        </td>
+                        <td>${book.price}</td>
+                        <td>${book.in_stock ? '<?php echo _("Sí"); ?>' : '<?php echo _("No"); ?>'}</td>
+                        <td>${book.rating}</td>
+                        <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
+                        <td>
+                            <div class="description-box" style="max-height: 5em; overflow-y: auto;">
+                                ${book.description}
+                            </div>
+                        </td>
+                        <td>${book.genre}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center"><?php echo _("Editar"); ?></button>
+                                <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})"><?php echo _("Eliminar"); ?></button>
+                            </div>
+                        </td>
+                    `;
                     tbody.appendChild(row);
                 });
             } catch (error) {
                 console.error('Error:', error);
-                alert('Hubo un error al realizar la búsqueda');
+                alert('<?php echo _("Hubo un error al realizar la búsqueda"); ?>');
             }
         });
     });
 
-    //Funcion para eliminar un libro
     function deleteBook(bookId) {
-        if (confirm('¿Estás seguro de que deseas eliminar este libro?')) {
+        if (confirm('<?php echo _("¿Estás seguro de que deseas eliminar este libro?"); ?>')) {
             fetch(`/api/books/${bookId}`, {
                     method: 'DELETE',
                     headers: {
@@ -248,20 +256,19 @@ include(__DIR__ . '/../includes/navbar.php');
                 .then(response => response.json())
                 .then(data => {
                     if (data.message === 'Libro eliminado correctamente') {
-                        alert('Libro eliminado correctamente');
-                        location.reload(); // Recargar la página para actualizar la lista de libros
+                        alert('<?php echo _("Libro eliminado correctamente"); ?>');
+                        location.reload();
                     } else {
-                        alert('Error al eliminar el libro: ' + data.message);
+                        alert('<?php echo _("Error al eliminar el libro:"); ?> ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error al eliminar el libro:', error);
-                    alert('Error al eliminar el libro');
+                    alert('<?php echo _("Error al eliminar el libro"); ?>');
                 });
         }
     }
 
-    // Función para convertir el rating de texto a número
     function convertirRatingATexto(rating) {
         const ratingMap = {
             "One": 1,
@@ -270,10 +277,9 @@ include(__DIR__ . '/../includes/navbar.php');
             "Four": 4,
             "Five": 5
         };
-        return ratingMap[rating] || 0; // Si no existe, devuelve 0
+        return ratingMap[rating] || 0;
     }
 
-    // Función para obtener datos de la API
     async function fetchData() {
         try {
             const response = await fetch('/api/books-dashboard');
@@ -282,45 +288,44 @@ include(__DIR__ . '/../includes/navbar.php');
             }
             const books = await response.json();
             const tbody = document.getElementById('books-table-body');
-            tbody.innerHTML = ''; // Limpiar el contenido existente
+            tbody.innerHTML = '';
 
             books.forEach(book => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                        <td>${book.id}</td>
-                        <td>
-                            <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
-                                ${book.title}
-                            </div>
-                        </td>
-                        <td>${book.price}</td>
-                        <td>${book.in_stock ? 'Sí' : 'No'}</td>
-                        <td>${book.rating}</td>
-                        <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
-                        <td>
-                             <div class="description-box" style="max-height: 5em; overflow-y: auto;">
-                                ${book.description}
-                            </div>
-                        </td>
-                        <td>${book.genre}</td>
-                        <td>
-                            <div class="d-flex gap-2"> <!-- Contenedor flex para los botones -->
-                                <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center">Editar</button>
-                                <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})">Eliminar</button>
-                            </div>
-                        </td>
-                    `;
+                    <td>${book.id}</td>
+                    <td>
+                        <div class="title-box" style="max-height: 5em; overflow-y: auto; max-width: 200px;">
+                            ${book.title}
+                        </div>
+                    </td>
+                    <td>${book.price}</td>
+                    <td>${book.in_stock ? '<?php echo _("Sí"); ?>' : '<?php echo _("No"); ?>'}</td>
+                    <td>${book.rating}</td>
+                    <td><img src="${book.image_url}" alt="${book.title}" class="img-fluid" style="max-width: 50px;"></td>
+                    <td>
+                        <div class="description-box" style="max-height: 5em; overflow-y: auto;">
+                            ${book.description}
+                        </div>
+                    </td>
+                    <td>${book.genre}</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-warning w-100 d-flex justify-content-center align-items-center"><?php echo _("Editar"); ?></button>
+                            <button class="btn btn-sm btn-danger w-100 d-flex justify-content-center align-items-center" onclick="deleteBook(${book.id})"><?php echo _("Eliminar"); ?></button>
+                        </div>
+                    </td>
+                `;
                 tbody.appendChild(row);
             });
 
-            return books; // Retornar los datos para que el resto del código pueda usarlos
+            return books;
         } catch (error) {
             console.error("Error:", error);
             return [];
         }
     }
 
-    // Función para crear un gráfico de barras
     function createBarChart(ctx, labels, data, label) {
         new Chart(ctx, {
             type: 'bar',
@@ -335,8 +340,8 @@ include(__DIR__ . '/../includes/navbar.php');
                 }]
             },
             options: {
-                responsive: true, // Asegura que el gráfico sea responsive
-                maintainAspectRatio: false, // Permite ajustar el tamaño
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -346,7 +351,6 @@ include(__DIR__ . '/../includes/navbar.php');
         });
     }
 
-    // Función para crear un gráfico de pastel
     function createPieChart(ctx, labels, data, label) {
         new Chart(ctx, {
             type: 'pie',
@@ -373,18 +377,16 @@ include(__DIR__ . '/../includes/navbar.php');
                 }]
             },
             options: {
-                responsive: true, // Asegura que el gráfico sea responsive
-                maintainAspectRatio: false // Permite ajustar el tamaño
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     }
 
-    // Función principal para cargar los gráficos
     async function loadCharts() {
         const data = await fetchData();
         console.log("Datos recibidos de la API:", data);
 
-        // Gráfico 1: Libros por género (Pie Chart)
         const librosPorGenero = {};
         data.forEach(libro => {
             librosPorGenero[libro.genre] = (librosPorGenero[libro.genre] || 0) + 1;
@@ -393,46 +395,41 @@ include(__DIR__ . '/../includes/navbar.php');
 
         createPieChart(
             document.getElementById('chartGeneros').getContext('2d'),
-            Object.keys(librosPorGenero), // Géneros
-            Object.values(librosPorGenero), // Cantidad de libros por género
-            'Libros por género'
+            Object.keys(librosPorGenero),
+            Object.values(librosPorGenero),
+            '<?php echo _("Libros por género"); ?>'
         );
 
-        // Gráfico 2: Distribución de stock
         const librosEnStock = data.filter(libro => libro.in_stock).length;
         const librosAgotados = data.length - librosEnStock;
         console.log("Distribución de stock:", librosEnStock, librosAgotados);
 
         createPieChart(
             document.getElementById('chartStock').getContext('2d'),
-            ['En stock', 'Agotados'],
+            ['<?php echo _("En stock"); ?>', '<?php echo _("Agotados"); ?>'],
             [librosEnStock, librosAgotados],
-            'Distribución de stock'
+            '<?php echo _("Distribución de stock"); ?>'
         );
 
-        // Gráfico 3: Libros mejor valorados (top 5)
         const librosMejorValorados = data
             .map(libro => {
-                // Convertir el rating de texto a número
                 const ratingNumerico = convertirRatingATexto(libro.rating);
                 return {
                     ...libro,
                     rating: ratingNumerico
                 };
             })
-            .sort((a, b) => b.rating - a.rating) // Ordenar por rating descendente
-            .slice(0, 5); // Tomar los primeros 5
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 5);
 
         console.log("Libros mejor valorados:", librosMejorValorados);
 
-        // Extraer los títulos y los ratings de los libros mejor valorados
         const labels = librosMejorValorados.map(libro => libro.title);
         const ratings = librosMejorValorados.map(libro => libro.rating);
 
         console.log("Labels (títulos):", labels);
         console.log("Data (ratings):", ratings);
 
-        // Verifica que el elemento del DOM existe
         const chartRatingElement = document.getElementById('chartRating');
         if (chartRatingElement) {
             console.log("Elemento 'chartRating' encontrado.");
@@ -440,19 +437,17 @@ include(__DIR__ . '/../includes/navbar.php');
                 chartRatingElement.getContext('2d'),
                 labels,
                 ratings,
-                'Rating'
+                '<?php echo _("Rating"); ?>'
             );
         } else {
             console.error("El elemento del gráfico 'chartRating' no existe.");
         }
 
-        // Gráfico 4: Precio promedio por género
         const precioPorGenero = {};
         data.forEach(libro => {
-            // Limpiar el precio: eliminar el símbolo de la libra (£) y convertir a número
             const precioLimpio = parseFloat(libro.price.replace(/[^0-9.]/g, ''));
 
-            if (!isNaN(precioLimpio)) { // Solo procesar si el precio es un número válido
+            if (!isNaN(precioLimpio)) {
                 if (!precioPorGenero[libro.genre]) {
                     precioPorGenero[libro.genre] = {
                         total: 0,
@@ -474,11 +469,10 @@ include(__DIR__ . '/../includes/navbar.php');
             document.getElementById('chartPrecioGenero').getContext('2d'),
             generosPrecio,
             preciosPromedio,
-            'Precio promedio'
+            '<?php echo _("Precio promedio"); ?>'
         );
     }
 
-    // Cargar los gráficos cuando la página esté lista
     document.addEventListener('DOMContentLoaded', loadCharts);
 </script>
 

@@ -1,11 +1,13 @@
 <?php
 // Iniciar la sesión (si no está iniciada)
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Obtener el ID del usuario desde la sesión
 $userID = $_SESSION['user_id'] ?? null; // Asegúrate de que el ID del usuario esté almacenado en la sesión
 
-$page_title = "Perfil";
+$page_title = _("Perfil");
 include(__DIR__ . '/../includes/header.php');
 include(__DIR__ . '/../includes/navbar.php');
 ?>
@@ -14,28 +16,28 @@ include(__DIR__ . '/../includes/navbar.php');
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Tu perfil</h4>
+                        <h4><?php echo _("Tu perfil"); ?></h4>
                     </div>
                     <div class="card-body">
                         <form id="profileForm">
                             <div class="form-group mb-3">
-                                <label for="name">Nombre</label>
+                                <label for="name"><?php echo _("Nombre"); ?></label>
                                 <input type="text" id="name" class="form-control" readonly>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="surname">Apellido</label>
+                                <label for="surname"><?php echo _("Apellido"); ?></label>
                                 <input type="text" id="surname" class="form-control" readonly>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="phone">Teléfono</label>
+                                <label for="phone"><?php echo _("Teléfono"); ?></label>
                                 <input type="text" id="phone" class="form-control" readonly>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="email">Correo electrónico</label>
+                                <label for="email"><?php echo _("Correo electrónico"); ?></label>
                                 <input type="email" id="email" class="form-control" readonly>
                             </div>
                             <div class="form-group mb-3">
-                                <a href="/edit_profile.php" class="btn btn-primary">Cambiar datos</a>
+                                <a href="/edit_profile.php" class="btn btn-primary"><?php echo _("Cambiar datos"); ?></a>
                             </div>
                         </form>
                     </div>
@@ -50,7 +52,7 @@ include(__DIR__ . '/../includes/navbar.php');
 
         // Verificar si el ID del usuario es válido
         if (!userId) {
-            alert("No se pudo obtener el ID del usuario. Por favor, inicie sesión.");
+            alert("<?php echo _("No se pudo obtener el ID del usuario. Por favor, inicie sesión."); ?>");
         } else {
             // Hacer una solicitud a la API para obtener los datos del usuario
             fetch(`/api/user/${userId}`)
@@ -69,7 +71,7 @@ include(__DIR__ . '/../includes/navbar.php');
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("No se pudieron cargar los datos del usuario.");
+                    alert("<?php echo _("No se pudieron cargar los datos del usuario."); ?>");
                 });
         }
     </script>

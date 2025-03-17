@@ -1,58 +1,76 @@
 <?php
 
-$page_title = "Catálogo";
+// Obtener el idioma seleccionado de la URL, si está presente
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang']; // Guardar el idioma en la sesión
+}
+
+// Usar el idioma de la sesión o el predeterminado si no está configurado
+$locale = isset($_SESSION['lang']) ? $_SESSION['lang'] . '.UTF-8' : 'en_US.UTF-8';
+
+// Configura el locale y el dominio de traducción
+putenv("LANG=$locale");
+putenv("LANGUAGE=$locale");
+setlocale(LC_ALL, $locale);
+$domain = 'messages';
+textdomain($domain);
+
+// Verificar la ruta de traducciones
+$ruta = realpath(__DIR__ . '/../../locales');
+if ($ruta === false) {
+    error_log("Error: No se pudo encontrar la carpeta 'locales'.");
+} else {
+    bindtextdomain($domain, $ruta);
+    error_log("Ruta de traducciones configurada: " . $ruta);
+}
+bind_textdomain_codeset($domain, 'UTF-8');
+
+$page_title = _("Catálogo");
 include(__DIR__ . '/../includes/header.php');
 include(__DIR__ . '/../includes/navbar.php');
 
 require_once(__DIR__ . '/../src/controllers/ProjectController.php');
 $controller = new ProjectController();
 
-// Obtener la ruta de la URL
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $pathParts = explode('/', $path);
 
-// Extraer el género y la página
 $selectedGenre = '';
 $current_page = 1;
 
 if ($pathParts[1] === 'catalog') {
     if (isset($pathParts[2]) && $pathParts[2] !== 'page') {
-        $selectedGenre = urldecode($pathParts[2]); // Género
+        $selectedGenre = urldecode($pathParts[2]);
     }
     if (isset($pathParts[3]) && $pathParts[3] === 'page' && isset($pathParts[4])) {
-        $current_page = (int)$pathParts[4]; // Número de página
+        $current_page = (int)$pathParts[4];
     } elseif (isset($pathParts[2]) && $pathParts[2] === 'page' && isset($pathParts[3])) {
-        $current_page = (int)$pathParts[3]; // Número de página (sin género)
+        $current_page = (int)$pathParts[3];
     }
 }
 
-// Validar el género
 if (!empty($selectedGenre) && !$controller->isValidGenre($selectedGenre)) {
-    echo "<div class='alert alert-warning'>El género seleccionado no existe.</div>";
-    $selectedGenre = ''; // Limpiar el género para mostrar todos los libros
+    echo "<div class='alert alert-warning'>" . _("El género seleccionado no existe.") . "</div>";
+    $selectedGenre = '';
 }
 
-// Obtener los libros para la página actual, filtrados por género
-$per_page = 20; // Número de libros por página
+$per_page = 20;
 $books = $controller->getBooks($current_page, $per_page, $selectedGenre);
 
-// Obtener el total de libros filtrados por género
 $total_books = $controller->getTotalBooks($selectedGenre);
 $total_pages = ceil($total_books / $per_page);
 
-// Validar el número de página
 $current_page = max(1, min($current_page, $total_pages));
 
 ?>
 <div class="container mt-5">
-    <h1 class="mb-4">Catálogo de Libros</h1>
+    <h1 class="mb-4"><?php echo _("Catálogo de Libros"); ?></h1>
 
-    <!-- Select para filtrar por género -->
     <form method="GET" action="">
         <div class="mb-3">
-            <label for="genre" class="form-label">Filtrar por género:</label>
+            <label for="genre" class="form-label"><?php echo _("Filtrar por género:"); ?></label>
             <select class="form-select w-auto" id="genre" name="genre" onchange="window.location.href = '/catalog/' + encodeURIComponent(this.value);">
-                <option value="">Todos los géneros</option>
+                <option value=""><?php echo _("Todos los géneros"); ?></option>
                 <?php
                 $genres = $controller->getGenres();
                 foreach ($genres as $genre): ?>
@@ -71,17 +89,16 @@ $current_page = max(1, min($current_page, $total_pages));
                     <img src="<?php echo htmlspecialchars($book['image_url']); ?>" class="card-img-top img-fluid" alt="<?php echo htmlspecialchars($book['title']); ?>">
                     <div class="card-body flex-grow-1 p-2">
                         <h5 class="card-title" style="font-size: 0.9rem;"><?php echo htmlspecialchars($book['title']); ?></h5>
-                        <p class="card-text" style="font-size: 0.8rem;"><strong>Precio:</strong> <?php echo htmlspecialchars($book['price']); ?></p>
+                        <p class="card-text" style="font-size: 0.8rem;"><strong><?php echo _("Precio:"); ?></strong> <?php echo htmlspecialchars($book['price']); ?></p>
                     </div>
                     <div class="card-footer text-center border-0 p-1">
-                        <a href="/book_details/<?php echo htmlspecialchars($book['id']); ?>" class="btn btn-primary btn-sm w-100 rounded-0">Más información</a>
+                        <a href="/book_details/<?php echo htmlspecialchars($book['id']); ?>" class="btn btn-primary btn-sm w-100 rounded-0"><?php echo _("Más información"); ?></a>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
 
-    <!-- Paginación -->
     <nav aria-label="Page navigation" class="mt-4">
         <ul class="pagination justify-content-center">
             <?php if ($current_page > 1): ?>
