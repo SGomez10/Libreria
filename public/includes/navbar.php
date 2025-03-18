@@ -57,7 +57,7 @@ $language_map = [
                             <?php echo _("Usuario"); ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/profile.php"><?php echo _("Mi perfil"); ?></a></li>
+                            <li><a class="dropdown-item" href="/profile"><?php echo _("Mi perfil"); ?></a></li>
                             <li><a class="dropdown-item" href="/dashboard"><?php echo _("Dashboard"); ?></a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><?php echo _("Cerrar sesión"); ?></a></li>

@@ -70,14 +70,25 @@ if (strpos($request, $apiPrefix) === 0) {
         echo json_encode($books);
     } elseif ($parts[0] === 'user') {
         if (isset($parts[1]) && is_numeric($parts[1])) {
-            // Ruta: GET /api/user/{id}
-            $user_id = (int)$parts[1];
-            $user = $ProjectController->getUserById($user_id);
-            if ($user) {
-                echo json_encode($user);
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                // Ruta: GET /api/user/{id}
+                $user_id = (int)$parts[1];
+                $user = $ProjectController->getUserById($user_id);
+                if ($user) {
+                    echo json_encode($user);
+                } else {
+                    header("HTTP/1.0 404 Not Found");
+                    echo json_encode(["message" => "Usuario no encontrado"]);
+                }
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+                // Ruta: PUT /api/user/{id} (actualizar un usuario)
+                require_once __DIR__ . '/src/controllers/ApiController.php';
+                $apiController = new ApiController();
+                $apiController->handleRequest();
             } else {
+                // Ruta no válida
                 header("HTTP/1.0 404 Not Found");
-                echo json_encode(["message" => "Usuario no encontrado"]);
+                echo json_encode(["error" => "Ruta de API no encontrada"]);
             }
         } else {
             // Ruta no válida
@@ -116,6 +127,10 @@ if (strpos($request, $apiPrefix) === 0) {
                 include(__DIR__ . '/views/contact.php');
                 break;
             case '/dashboard':
+                if (!isset($_SESSION['user_id'])) {
+                    header("Location: /login");
+                    exit();
+                }
                 include(__DIR__ . '/views/dashboard.php');
                 break;
             case '/login':
@@ -128,11 +143,24 @@ if (strpos($request, $apiPrefix) === 0) {
                 include(__DIR__ . '/views/faq.php');
                 break;
             case '/profile':
+                if (!isset($_SESSION['user_id'])) {
+                    header("Location: /login");
+                    exit();
+                }
                 include(__DIR__ . '/views/profile.php');
                 break;
             case '/info':
                 include(__DIR__ . '/views/info.php');
                 break;
+
+            case '/logout':
+                if (!isset($_SESSION['user_id'])) {
+                    header("Location: /login");
+                    exit();
+                }
+                require_once __DIR__ . '/views/logout.php';
+                break;
+                
             default:
                 http_response_code(404);
                 require __DIR__ . $viewDir . '404.php';

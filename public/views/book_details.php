@@ -1,27 +1,34 @@
 <?php
-/*
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Obtener el idioma seleccionado de la URL, si está presente
 if (isset($_GET['lang'])) {
-    $_SESSION['lang'] = $_GET['lang'];
+    $_SESSION['lang'] = $_GET['lang']; // Guardar el idioma en la sesión
 }
 
-// Establecer el idioma por defecto si no hay ninguno seleccionado
-if (!isset($_SESSION['lang'])) {
-    $_SESSION['lang'] = 'es_ES'; // Idioma por defecto
-}
+// Usar el idioma de la sesión o el predeterminado si no está configurado
+$locale = isset($_SESSION['lang']) ? $_SESSION['lang'] . '.UTF-8' : 'es_ES.UTF-8';
 
-// Configurar el idioma en la aplicación
-$locale = $_SESSION['lang'];
+// Configura el locale y el dominio de traducción
+putenv("LANG=$locale");
+putenv("LANGUAGE=$locale");
 setlocale(LC_ALL, $locale);
-bindtextdomain("messages", "./locale");
-textdomain("messages");
+$domain = 'messages';
+textdomain($domain);
 
-// Definir el idioma actual y su correspondiente bandera
-$current_lang = $_SESSION['lang'];
-$language_map = [
-    'en_US' => ['name' => _("English"), 'flag' => 'https://flagcdn.com/w20/gb.png'],
-    'es_ES' => ['name' => _("Español"), 'flag' => 'https://flagcdn.com/w20/es.png'],
-];
-*/
+// Verificar la ruta de traducciones
+$ruta = realpath(__DIR__ . '/../../locales');
+if ($ruta === false) {
+    error_log("Error: No se pudo encontrar la carpeta 'locales'.");
+} else {
+    bindtextdomain($domain, $ruta);
+    error_log("Ruta de traducciones configurada: " . $ruta);
+}
+bind_textdomain_codeset($domain, 'UTF-8');
+
 // Obtener el ID del libro desde la URL amigable
 $request_uri = $_SERVER['REQUEST_URI']; // Obtiene la ruta completa (por ejemplo, "/book_details/123")
 $pattern = '/^\/book_details\/(\d+)$/'; // Expresión regular para extraer el ID

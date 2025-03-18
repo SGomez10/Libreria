@@ -92,7 +92,7 @@ class SessionController {
                 $statement->execute();
     
                 // Redirigir al perfil del usuario
-                header('Location: /profile');
+                header('Location: /catalog');
                 exit();
             } else {
                 $_SESSION['status'] = "Correo electrónico o contraseña incorrectos";

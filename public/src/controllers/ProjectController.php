@@ -239,4 +239,32 @@ class ProjectController
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    // Actualizar los datos de un usuario
+    public function updateUser($id, $name, $surname, $phone, $email)
+    {
+        // Validar que el ID sea un número y que todos los campos estén presentes
+        if (!is_numeric($id) || empty($name) || empty($surname) || empty($phone) || empty($email)) {
+            error_log("Datos incompletos o ID no válido: ID=$id, Name=$name, Surname=$surname, Phone=$phone, Email=$email");
+            return "Datos incompletos o ID no válido.";
+        }
+
+        try {
+            $stmt = $this->pdo->prepare("UPDATE usuarios SET name = ?, surname = ?, phone = ?, email = ? WHERE id = ?");
+            if ($stmt->execute([$name, $surname, $phone, $email, $id])) {
+                if ($stmt->rowCount() > 0) {
+                    return "Usuario actualizado correctamente.";
+                } else {
+                    error_log("No se realizaron cambios en el usuario: ID=$id");
+                    return "No se realizaron cambios en el usuario.";
+                }
+            } else {
+                error_log("Error al ejecutar la consulta de actualización: ID=$id");
+                return "Error al actualizar el usuario.";
+            }
+        } catch (PDOException $e) {
+            error_log("Error al actualizar el usuario: " . $e->getMessage()); // Registrar el error
+            return "Error interno del servidor al actualizar el usuario.";
+        }
+    }
 }
