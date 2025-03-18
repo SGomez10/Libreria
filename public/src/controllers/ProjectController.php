@@ -116,35 +116,56 @@ class ProjectController
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    //Obtener un libro por título
-    public function searchBooks($query)
-    {
-        try {
-            $sql = "SELECT * FROM books WHERE title LIKE :title";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':title', '%' . $query . '%', PDO::PARAM_STR);
-            if (!$stmt->execute()) {
-                throw new Exception("Error al ejecutar la consulta");
-            }
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            error_log("Consulta ejecutada correctamente. Resultados: " . print_r($results, true));
-            return $results;
-        } catch (Exception $e) {
-            error_log("Error en searchBooks: " . $e->getMessage());
-            return []; // Retorna un array vacío en caso de error
-        }
-    }
-
     // Agregar un nuevo libro
     public function addBook($title, $price, $in_stock, $rating, $image_url, $description, $genre)
     {
         // Validar que todos los campos estén presentes
-        if (empty($title) || empty($price) || empty($in_stock) || empty($rating) || empty($image_url) || empty($description) || empty($genre)) {
-            return false;
+        if (trim($title) === '' || trim($price) === '' || trim($in_stock) === '' || trim($rating) === '' || trim($image_url) === '' || trim($description) === '' || trim($genre) === '') {
+            return "Error: Todos los campos son obligatorios.";
         }
 
-        $stmt = $this->pdo->prepare("INSERT INTO books (title, price, in_stock, rating, image_url, description, genre) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        return $stmt->execute([$title, $price, $in_stock, $rating, $image_url, $description, $genre]);
+        // Validar que el precio sea un número válido
+        if (!is_numeric($price)) {
+            return "Error: El precio debe ser un número válido.";
+        }
+
+        // Convertir el precio a string y añadir £
+        $price = '£' . (string)$price;
+
+        // Validar que el stock sea "In stock" o "Agotado"
+        if (!in_array($in_stock, ["In stock", "Agotado"])) {
+            return "Error: El valor de 'en stock' debe ser 'In stock' o 'Agotado'.";
+        }
+
+        // Validar que el rating sea uno de los valores permitidos
+        $allowedRatings = ["One", "Two", "Three", "Four", "Five"];
+        if (!in_array($rating, $allowedRatings)) {
+            return "Error: El rating no es válido. Debe ser 'One', 'Two', 'Three', 'Four' o 'Five'.";
+        }
+
+        try {
+            // Insertar el libro en la base de datos
+            $stmt = $this->pdo->prepare("INSERT INTO books (title, price, in_stock, rating, image_url, description, genre) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $title,
+                (string)$price, // Convertir a string (aunque ya es string desde el frontend)
+                $in_stock,      // "In stock" o "Agotado"
+                $rating,
+                $image_url,
+                $description,
+                $genre
+            ]);
+
+            // Verificar si se insertó correctamente
+            if ($stmt->rowCount() > 0) {
+                return "Libro agregado correctamente.";
+            } else {
+                return "Error: No se pudo agregar el libro.";
+            }
+        } catch (PDOException $e) {
+            error_log("Error al agregar el libro: " . $e->getMessage()); // Registrar el error
+            return "Error interno del servidor al agregar el libro.";
+        }
     }
 
     // Actualizar un libro
@@ -152,11 +173,31 @@ class ProjectController
     {
         // Validar que el ID sea un número y que todos los campos estén presentes
         if (!is_numeric($id) || empty($title) || empty($price) || empty($in_stock) || empty($rating) || empty($image_url) || empty($description) || empty($genre)) {
-            return false;
+            return "Datos incompletos o ID no válido.";
         }
 
-        $stmt = $this->pdo->prepare("UPDATE books SET title = ?, price = ?, in_stock = ?, rating = ?, image_url = ?, description = ?, genre = ? WHERE id = ?");
-        return $stmt->execute([$title, $price, $in_stock, $rating, $image_url, $description, $genre, $id]);
+        // Convertir el precio a string y añadir £
+        $price = '£' . (string)$price;
+
+        // Hacer casting de las variables a cadenas (son varchar en la database)
+        $price = (string)$price;
+        $in_stock = (string)$in_stock;
+
+        try {
+            $stmt = $this->pdo->prepare("UPDATE books SET title = ?, price = ?, in_stock = ?, rating = ?, image_url = ?, description = ?, genre = ? WHERE id = ?");
+            if ($stmt->execute([$title, $price, $in_stock, $rating, $image_url, $description, $genre, $id])) {
+                if ($stmt->rowCount() > 0) {
+                    return "Libro actualizado correctamente.";
+                } else {
+                    return "No se realizaron cambios en el libro.";
+                }
+            } else {
+                return "Error al actualizar el libro.";
+            }
+        } catch (PDOException $e) {
+            error_log("Error al actualizar el libro: " . $e->getMessage()); // Registrar el error
+            return "Error interno del servidor al actualizar el libro.";
+        }
     }
 
     // Eliminar un libro
@@ -164,11 +205,22 @@ class ProjectController
     {
         // Validar que el ID sea un número
         if (!is_numeric($id)) {
-            return false;
+            return json_encode(["message" => "ID no válido"]);
         }
 
-        $stmt = $this->pdo->prepare("DELETE FROM books WHERE id = ?");
-        return $stmt->execute([$id]);
+        try {
+            // Eliminar el libro de la base de datos
+            $stmt = $this->pdo->prepare("DELETE FROM books WHERE id = ?");
+            if ($stmt->execute([$id])) {
+                return json_encode(["message" => "Libro eliminado correctamente"]);
+            } else {
+                return json_encode(["message" => "Error al eliminar el libro"]);
+            }
+        } catch (PDOException $e) {
+            // Registrar el error en el log
+            error_log("Error al eliminar el libro: " . $e->getMessage());
+            return json_encode(["message" => "Error interno del servidor"]);
+        }
     }
 
     // Obtener un usuario por ID

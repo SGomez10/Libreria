@@ -1,7 +1,29 @@
 <?php
+/*
+if (isset($_GET['lang'])) {
+    $_SESSION['lang'] = $_GET['lang'];
+}
 
-// Obtener el ID del libro desde la URL 
-$request_uri = $_SERVER['REQUEST_URI']; // Obtiene la ruta completa 
+// Establecer el idioma por defecto si no hay ninguno seleccionado
+if (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'es_ES'; // Idioma por defecto
+}
+
+// Configurar el idioma en la aplicación
+$locale = $_SESSION['lang'];
+setlocale(LC_ALL, $locale);
+bindtextdomain("messages", "./locale");
+textdomain("messages");
+
+// Definir el idioma actual y su correspondiente bandera
+$current_lang = $_SESSION['lang'];
+$language_map = [
+    'en_US' => ['name' => _("English"), 'flag' => 'https://flagcdn.com/w20/gb.png'],
+    'es_ES' => ['name' => _("Español"), 'flag' => 'https://flagcdn.com/w20/es.png'],
+];
+*/
+// Obtener el ID del libro desde la URL amigable
+$request_uri = $_SERVER['REQUEST_URI']; // Obtiene la ruta completa (por ejemplo, "/book_details/123")
 $pattern = '/^\/book_details\/(\d+)$/'; // Expresión regular para extraer el ID
 preg_match($pattern, $request_uri, $matches); // Busca el ID en la ruta
 
@@ -52,7 +74,7 @@ if ($book_id) {
                         document.getElementById('book-image').alt = book.title;
                         document.getElementById('book-genre').textContent = book.genre;
                         document.getElementById('book-rating').textContent = book.rating;
-                        document.getElementById('book-price').textContent = `${book.price}`;
+                        document.getElementById('book-price').textContent = `$${book.price}`;
                         document.getElementById('book-stock').textContent = book.in_stock ? 'Disponible' : 'Agotado';
                         document.getElementById('book-description').textContent = book.description;
                     } else {

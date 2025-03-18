@@ -6,7 +6,7 @@ if (isset($_GET['lang'])) {
 }
 
 // Usar el idioma de la sesión o el predeterminado si no está configurado
-$locale = isset($_SESSION['lang']) ? $_SESSION['lang'] . '.UTF-8' : 'en_US.UTF-8';
+$locale = isset($_SESSION['lang']) ? $_SESSION['lang'] . '.UTF-8' : 'es_ES.UTF-8';
 
 // Configura el locale y el dominio de traducción
 putenv("LANG=$locale");

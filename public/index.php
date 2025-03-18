@@ -1,5 +1,10 @@
 <?php
 
+// Habilitar errores para depuración
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
 $request = $_SERVER['REQUEST_URI'];
@@ -8,7 +13,7 @@ $apiPrefix = '/api/';
 
 if (strpos($request, $apiPrefix) === 0) {
     // Rutas de la API
-    require __DIR__ . '/src/controllers/ProjectController.php';
+    require_once __DIR__ . '/src/controllers/ProjectController.php';
     $ProjectController = new ProjectController();
 
     // Elimina el prefijo de la API
@@ -19,9 +24,24 @@ if (strpos($request, $apiPrefix) === 0) {
 
     // Manejo de rutas de la API
     if ($parts[0] === 'books') {
-        if (isset($parts[1])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Ruta: POST /api/books (agregar un libro)
+            require_once __DIR__ . '/src/controllers/ApiController.php';
+            $apiController = new ApiController();
+            $apiController->handleRequest();
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($parts[1]) && is_numeric($parts[1])) {
+            // Ruta: PUT /api/books/{id} (actualizar un libro)
+            require_once __DIR__ . '/src/controllers/ApiController.php';
+            $apiController = new ApiController();
+            $apiController->handleRequest();
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($parts[1]) && is_numeric($parts[1])) {
+            // Ruta: DELETE /api/books/{id}
+            require_once __DIR__ . '/src/controllers/ApiController.php';
+            $apiController = new ApiController();
+            $apiController->handleRequest();
+        } elseif (isset($parts[1])) {
             if (is_numeric($parts[1])) {
-                // Ruta: /api/books/{id}
+                // Ruta: GET /api/books/{id}
                 $book_id = (int)$parts[1];
                 $book = $ProjectController->getBookById($book_id);
                 if ($book) {
@@ -31,7 +51,7 @@ if (strpos($request, $apiPrefix) === 0) {
                     echo json_encode(["message" => "Libro no encontrado"]);
                 }
             } elseif ($parts[1] === 'genre' && isset($parts[2])) {
-                // Ruta: /api/books/genre/{genre}
+                // Ruta: GET /api/books/genre/{genre}
                 $genre = urldecode($parts[2]);
                 $books = $ProjectController->getBooks(1, 10, $genre);
                 echo json_encode($books);
@@ -41,36 +61,16 @@ if (strpos($request, $apiPrefix) === 0) {
                 echo json_encode(["error" => "Ruta de API no encontrada"]);
             }
         } else {
-            // Ruta: /api/books
+            // Ruta: GET /api/books
             echo json_encode($ProjectController->getBooks());
         }
     } elseif ($parts[0] === 'books-dashboard') {
-        // Ruta: /api/books-dashboard
+        // Ruta: GET /api/books-dashboard
         $books = $ProjectController->getBooksForDashboard();
         echo json_encode($books);
-    } elseif ($parts[0] === 'search-books') {
-        // Ruta: /api/search-books
-        if (isset($_GET['query'])) {
-            $query = $_GET['query'];
-
-            // Primero, obtener todos los libros usando getBooksForDashboard
-            $allBooks = $ProjectController->getBooksForDashboard();
-
-            // Luego, aplicar la búsqueda solo en el campo "title"
-            $filteredBooks = array_filter($allBooks, function ($book) use ($query) {
-                // Buscar solo en el título
-                return stripos($book['title'], $query) !== false;
-            });
-
-            // Retornar los libros filtrados
-            echo json_encode(array_values($filteredBooks)); // Reindexar el array
-        } else {
-            // Si no se proporciona una consulta, retornar un array vacío
-            echo json_encode([]);
-        }
     } elseif ($parts[0] === 'user') {
         if (isset($parts[1]) && is_numeric($parts[1])) {
-            // Ruta: /api/user/{id}
+            // Ruta: GET /api/user/{id}
             $user_id = (int)$parts[1];
             $user = $ProjectController->getUserById($user_id);
             if ($user) {
@@ -116,13 +116,7 @@ if (strpos($request, $apiPrefix) === 0) {
                 include(__DIR__ . '/views/contact.php');
                 break;
             case '/dashboard':
-                if (isset($_SESSION['user_id'])) {
-                    include(__DIR__ . '/views/dashboard.php');
-                } else {
-                    // Redirigir al usuario a la página de inicio de sesión
-                    header('Location: /login');
-                    exit();
-                }
+                include(__DIR__ . '/views/dashboard.php');
                 break;
             case '/login':
                 include(__DIR__ . '/views/login.php');
@@ -136,11 +130,9 @@ if (strpos($request, $apiPrefix) === 0) {
             case '/profile':
                 include(__DIR__ . '/views/profile.php');
                 break;
-
             case '/info':
                 include(__DIR__ . '/views/info.php');
                 break;
-
             default:
                 http_response_code(404);
                 require __DIR__ . $viewDir . '404.php';

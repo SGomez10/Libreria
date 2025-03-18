@@ -1,4 +1,7 @@
 <?php
+// Iniciar la sesión (no me va el cambio de iconos, si no)
+
+
 // Guardar el idioma seleccionado en la sesión
 if (isset($_GET['lang'])) {
     $_SESSION['lang'] = $_GET['lang'];
@@ -14,6 +17,13 @@ $locale = $_SESSION['lang'];
 setlocale(LC_ALL, $locale);
 bindtextdomain("messages", "./locale");
 textdomain("messages");
+
+// Definir el idioma actual y su correspondiente bandera
+$current_lang = $_SESSION['lang'];
+$language_map = [
+    'en_US' => ['name' => _("English"), 'flag' => 'https://flagcdn.com/w20/gb.png'],
+    'es_ES' => ['name' => _("Español"), 'flag' => 'https://flagcdn.com/w20/es.png'],
+];
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -24,17 +34,24 @@ textdomain("messages");
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/"><?php echo _("Inicio"); ?></a>
-                </li>
                 <?php if (!isset($_SESSION['user_id'])): ?>
+                    <!-- Navbar para usuarios no logueados -->
                     <li class="nav-item">
-                        <a class="nav-link" href="/register"><?php echo _("Registrarse"); ?></a>
+                        <a class="nav-link active" href="/"><?php echo _("Inicio"); ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/login"><?php echo _("Iniciar sesión"); ?></a>
+                        <a class="nav-link" href="/about"><?php echo _("Sobre nosotros"); ?></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/faq"><?php echo _("FAQ"); ?></a>
                     </li>
                 <?php else: ?>
+                    <!-- Navbar para usuarios logueados -->
+                    <!-- Botón "Catálogo" -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog"><?php echo _("Catálogo"); ?></a>
+                    </li>
+                    <!-- Desplegable del usuario -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <?php echo _("Usuario"); ?>
@@ -47,22 +64,21 @@ textdomain("messages");
                         </ul>
                     </li>
                 <?php endif; ?>
-                <!-- Selector de idiomas con banderas -->
+                <!-- Selector de idiomas con banderas (visible para todos) -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://flagcdn.com/w20/es.png" alt="<?php echo _("Español"); ?>" class="me-1" style="width: 20px; height: auto;"> <?php echo _("Español"); ?>
+                        <img src="<?php echo $language_map[$current_lang]['flag']; ?>" alt="<?php echo $language_map[$current_lang]['name']; ?>" class="me-1" style="width: 20px; height: auto;">
+                        <?php echo $language_map[$current_lang]['name']; ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                        <li>
-                            <a class="dropdown-item" href="?lang=en_US">
-                                <img src="https://flagcdn.com/w20/gb.png" alt="<?php echo _("English"); ?>" class="me-1" style="width: 20px; height: auto;"> <?php echo _("English"); ?>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="?lang=es_ES">
-                                <img src="https://flagcdn.com/w20/es.png" alt="<?php echo _("Español"); ?>" class="me-1" style="width: 20px; height: auto;"> <?php echo _("Español"); ?>
-                            </a>
-                        </li>
+                        <?php foreach ($language_map as $lang_code => $lang_data): ?>
+                            <li>
+                                <a class="dropdown-item" href="?lang=<?php echo $lang_code; ?>">
+                                    <img src="<?php echo $lang_data['flag']; ?>" alt="<?php echo $lang_data['name']; ?>" class="me-1" style="width: 20px; height: auto;">
+                                    <?php echo $lang_data['name']; ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
                     </ul>
                 </li>
             </ul>

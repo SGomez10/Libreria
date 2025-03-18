@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2025-03-16 20:07+0100\n"
-"PO-Revision-Date: 2025-03-16 20:07+0100\n"
+"POT-Creation-Date: 2025-03-17 18:29+0100\n"
+"PO-Revision-Date: 2025-03-17 18:30+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -112,102 +112,100 @@ msgid "Todos los derechos reservados."
 msgstr "All rights reserved."
 
 #: includes/navbar.php:24
-msgid "Toggle navigation"
-msgstr "Toggle navigation"
-
-#: includes/navbar.php:30 views/home.php:36
-msgid "Inicio"
-msgstr "Home"
-
-#: includes/navbar.php:34 views/register.php:80
-msgid "Registrarse"
-msgstr "Register"
-
-#: includes/navbar.php:37 views/home.php:50 views/login.php:57
-msgid "Iniciar sesión"
-msgstr "Login"
-
-#: includes/navbar.php:42
-msgid "Usuario"
-msgstr "User"
-
-#: includes/navbar.php:45
-msgid "Mi perfil"
-msgstr "Profile"
-
-#: includes/navbar.php:46 views/dashboard.php:2
-msgid "Dashboard"
-msgstr "Dashboard"
-
-#: includes/navbar.php:48
-msgid "Cerrar sesión"
-msgstr "Logout"
-
-#: includes/navbar.php:55 includes/navbar.php:65
-msgid "Español"
-msgstr "Spanish"
-
-#: includes/navbar.php:60
 msgid "English"
 msgstr "English"
 
-#: includes/navbar.php:70
-msgid "Italiano"
-msgstr "Italian"
+#: includes/navbar.php:25
+msgid "Español"
+msgstr "Spanish"
 
-#: includes/navbar.php:85
+#: includes/navbar.php:32
+msgid "Toggle navigation"
+msgstr "Toggle navigation"
+
+#: includes/navbar.php:40 views/home.php:31
+msgid "Inicio"
+msgstr "Home"
+
+#: includes/navbar.php:43
+msgid "Sobre nosotros"
+msgstr "About us"
+
+#: includes/navbar.php:46 views/faq.php:28
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/navbar.php:52 views/catalog.php:28
+msgid "Catálogo"
+msgstr "Catalog"
+
+#: includes/navbar.php:57
+msgid "Usuario"
+msgstr "User"
+
+#: includes/navbar.php:60
+msgid "Mi perfil"
+msgstr "Profile"
+
+#: includes/navbar.php:61 views/dashboard.php:28
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: includes/navbar.php:63
+msgid "Cerrar sesión"
+msgstr "Logout"
+
+#: includes/navbar.php:94
 msgid "Confirmar cierre de sesión"
 msgstr "Confirm logout"
 
-#: includes/navbar.php:86
+#: includes/navbar.php:95
 msgid "Close"
 msgstr "Close"
 
-#: includes/navbar.php:89
+#: includes/navbar.php:98
 msgid "¿Estás seguro de que deseas cerrar la sesión?"
 msgstr "Are you sure you want to log out?"
 
-#: includes/navbar.php:92 views/dashboard.php:79 views/dashboard.php:194
-#: views/dashboard.php:277
+#: includes/navbar.php:101 views/dashboard.php:220 views/dashboard.php:303
 msgid "No"
 msgstr "No"
 
-#: includes/navbar.php:93 views/dashboard.php:78 views/dashboard.php:194
-#: views/dashboard.php:277
+#: includes/navbar.php:102 views/dashboard.php:220 views/dashboard.php:303
 msgid "Sí"
 msgstr "Yes"
 
-#: views/404.php:32
+#: views/404.php:28
 msgid "No encontrado"
 msgstr "Not found"
 
-#: views/404.php:38
+#: views/404.php:34
 msgid "404 - Página no encontrada"
 msgstr "404 - Page not found"
 
-#: views/404.php:39
+#: views/404.php:35
 msgid "Lo sentimos, la página que estás buscando no existe."
 msgstr "Sorry, the page you're looking for doesn't exist."
 
-#: views/404.php:40
+#: views/404.php:36
 msgid "Volver al inicio"
 msgstr "Home"
 
-#: views/about.php:2 views/about.php:11
+#: views/about.php:27 views/about.php:36
 msgid "Sobre Nosotros"
 msgstr "About us"
 
-#: views/about.php:12
+#: views/about.php:37
 msgid ""
 "Conoce más sobre nuestra web, lo que hacemos, nuestra ubicación y horarios."
 msgstr ""
 "Learn more about our website, what we do, our location, and our schedule."
 
-#: views/about.php:18
+#: views/about.php:43
 msgid "¿Qué hacemos?"
 msgstr "What do we do?"
 
-#: views/about.php:19
+#: views/about.php:44
 msgid ""
 "En nuestra librería, nos dedicamos a ofrecer una amplia variedad de libros "
 "de diferentes géneros y autores. Nuestro objetivo es fomentar la lectura y "
@@ -218,19 +216,19 @@ msgstr ""
 "authors. Our goal is to encourage reading and provide a place where book "
 "lovers can find their favorite titles."
 
-#: views/about.php:22
+#: views/about.php:47
 msgid "Qué hacemos"
 msgstr "What we do"
 
-#: views/about.php:28
+#: views/about.php:53
 msgid "Ver el mapa más grande"
 msgstr "View larger map"
 
-#: views/about.php:31
+#: views/about.php:56
 msgid "Nuestra Ubicación"
 msgstr "Our Location"
 
-#: views/about.php:32
+#: views/about.php:57
 msgid ""
 "Nos encontramos en el corazón de la ciudad, en la calle Principal #123. Ven "
 "a visitarnos y descubre nuestro amplio catálogo de libros y eventos "
@@ -239,196 +237,188 @@ msgstr ""
 "We're located in the heart of the city, at 123 Main Street. Come visit us "
 "and discover our extensive book catalog and literary events."
 
-#: views/about.php:38 views/about.php:47
+#: views/about.php:63 views/about.php:72
 msgid "Horarios"
 msgstr "Schedules"
 
-#: views/about.php:39
+#: views/about.php:64
 msgid "Nuestros horarios de atención son:"
 msgstr "Our business hours are:"
 
-#: views/about.php:41
+#: views/about.php:66
 msgid "Lunes a Viernes: 9:00 AM - 8:00 PM"
 msgstr "Monday to Friday: 9:00 AM - 8:00 PM"
 
-#: views/about.php:42
+#: views/about.php:67
 msgid "Sábado: 10:00 AM - 6:00 PM"
 msgstr "Saturday: 10:00 AM - 6:00 PM"
 
-#: views/about.php:43
+#: views/about.php:68
 msgid "Domingo: Cerrado"
 msgstr "Sunday: Closed"
 
-#: views/catalog.php:33
-msgid "Catálogo"
-msgstr "Catalog"
-
-#: views/catalog.php:58
+#: views/catalog.php:53
 msgid "El género seleccionado no existe."
 msgstr "The selected gender does not exist."
 
-#: views/catalog.php:72
+#: views/catalog.php:67
 msgid "Catálogo de Libros"
 msgstr "Book catalog"
 
-#: views/catalog.php:76
+#: views/catalog.php:71
 msgid "Filtrar por género:"
 msgstr "Filter by gender:"
 
-#: views/catalog.php:78
+#: views/catalog.php:73
 msgid "Todos los géneros"
 msgstr "All genres"
 
-#: views/catalog.php:97
+#: views/catalog.php:92
 msgid "Precio:"
 msgstr "Price:"
 
-#: views/catalog.php:100
+#: views/catalog.php:95
 msgid "Más información"
 msgstr "More information"
 
-#: views/dashboard.php:14 views/dashboard.php:374
+#: views/dashboard.php:40 views/dashboard.php:400
 msgid "Libros por género"
 msgstr "Books by genre"
 
-#: views/dashboard.php:25 views/dashboard.php:385
+#: views/dashboard.php:51 views/dashboard.php:411
 msgid "Distribución de stock"
 msgstr "Stock distribution"
 
-#: views/dashboard.php:36
+#: views/dashboard.php:62
 msgid "Libros mejor valorados"
 msgstr "Top rated books"
 
-#: views/dashboard.php:47
+#: views/dashboard.php:73
 msgid "Precio promedio por género"
 msgstr "Average price by gender"
 
-#: views/dashboard.php:58
+#: views/dashboard.php:84
 msgid "Panel de Administración"
 msgstr "Administration Panel"
 
-#: views/dashboard.php:61
+#: views/dashboard.php:87
 msgid "Gestión de Libros"
 msgstr "Book Management"
 
-#: views/dashboard.php:68
+#: views/dashboard.php:94
 msgid "Título del Libro"
 msgstr "Book Title"
 
-#: views/dashboard.php:72 views/dashboard.php:139
+#: views/dashboard.php:98 views/dashboard.php:165
 msgid "Precio"
 msgstr "Price"
 
-#: views/dashboard.php:76 views/dashboard.php:140 views/dashboard.php:383
+#: views/dashboard.php:102 views/dashboard.php:166 views/dashboard.php:409
 msgid "En stock"
 msgstr "In stock"
 
-#: views/dashboard.php:85 views/dashboard.php:141 views/dashboard.php:414
+#: views/dashboard.php:111 views/dashboard.php:167 views/dashboard.php:440
 msgid "Rating"
 msgstr "Rating"
 
-#: views/dashboard.php:89
+#: views/dashboard.php:115
 msgid "URL de la imagen"
 msgstr "Image URL"
 
-#: views/dashboard.php:93 views/dashboard.php:144
+#: views/dashboard.php:119 views/dashboard.php:170
 msgid "Género"
 msgstr "Gender"
 
-#: views/dashboard.php:101 views/dashboard.php:143
+#: views/dashboard.php:127 views/dashboard.php:169
 msgid "Descripción"
 msgstr "Description"
 
-#: views/dashboard.php:109
+#: views/dashboard.php:135
 msgid "Añadir Libro"
 msgstr "Add book"
 
-#: views/dashboard.php:123
+#: views/dashboard.php:149
 msgid "Lista de Libros"
 msgstr "Book list"
 
-#: views/dashboard.php:128
+#: views/dashboard.php:154
 msgid "Buscar libro por su nombre"
 msgstr "Search for book by name"
 
-#: views/dashboard.php:129
+#: views/dashboard.php:155
 msgid "Buscar"
 msgstr "Search"
 
-#: views/dashboard.php:138
+#: views/dashboard.php:164
 msgid "Título"
 msgstr "Title"
 
-#: views/dashboard.php:142
+#: views/dashboard.php:168
 msgid "Imagen"
 msgstr "Image"
 
-#: views/dashboard.php:145
+#: views/dashboard.php:171
 msgid "Acciones"
 msgstr "Actions"
 
-#: views/dashboard.php:166
+#: views/dashboard.php:192
 msgid "Por favor, ingresa un término de búsqueda."
 msgstr "Please enter a search term."
 
-#: views/dashboard.php:180
+#: views/dashboard.php:206
 msgid "No se encontraron libros."
 msgstr "No books found."
 
-#: views/dashboard.php:205 views/dashboard.php:288
+#: views/dashboard.php:231 views/dashboard.php:314
 msgid "Editar"
 msgstr "Edit"
 
-#: views/dashboard.php:206 views/dashboard.php:289
+#: views/dashboard.php:232 views/dashboard.php:315
 msgid "Eliminar"
 msgstr "Delete"
 
-#: views/dashboard.php:214
+#: views/dashboard.php:240
 msgid "Hubo un error al realizar la búsqueda"
 msgstr "There was an error while performing the search"
 
-#: views/dashboard.php:220
+#: views/dashboard.php:246
 msgid "¿Estás seguro de que deseas eliminar este libro?"
 msgstr "Are you sure you want to delete this book?"
 
-#: views/dashboard.php:233
+#: views/dashboard.php:259
 msgid "Libro eliminado correctamente"
 msgstr "Successfully deleted book"
 
-#: views/dashboard.php:236
+#: views/dashboard.php:262
 msgid "Error al eliminar el libro:"
 msgstr "Error deleting book:"
 
-#: views/dashboard.php:241
+#: views/dashboard.php:267
 msgid "Error al eliminar el libro"
 msgstr "Error deleting book"
 
-#: views/dashboard.php:383
+#: views/dashboard.php:409
 msgid "Agotados"
 msgstr "Sold out"
 
-#: views/dashboard.php:446
+#: views/dashboard.php:472
 msgid "Precio promedio"
 msgstr "Average price"
 
-#: views/faq.php:33
-msgid "FAQ"
-msgstr "FAQ"
-
-#: views/faq.php:42
+#: views/faq.php:37
 msgid "Preguntas Frecuentes"
 msgstr "Frequently Asked Questions"
 
-#: views/faq.php:43
+#: views/faq.php:38
 msgid ""
 "Encuentra respuestas a las preguntas más comunes sobre nuestra librería."
 msgstr "Find answers to the most common questions about our bookstore."
 
-#: views/faq.php:51
+#: views/faq.php:46
 msgid "¿Cuál es el horario de la librería?"
 msgstr "What are the bookstore's schedule?"
 
-#: views/faq.php:56
+#: views/faq.php:51
 msgid ""
 "Nuestro horario de atención es de lunes a viernes de 9:00 AM a 8:00 PM, y "
 "los sábados de 10:00 AM a 6:00 PM. Los domingos estamos cerrados."
@@ -436,29 +426,29 @@ msgstr ""
 "Our business hours are Monday through Friday from 9:00 AM to 8:00 PM, and "
 "Saturday from 10:00 AM to 6:00 PM. We are closed on Sundays."
 
-#: views/faq.php:63
+#: views/faq.php:58
 msgid "¿Dónde está ubicada la librería?"
 msgstr "Where is the bookstore located?"
 
-#: views/faq.php:68
+#: views/faq.php:63
 msgid "Nos encontramos en la calle Principal #123, en el corazón de la ciudad."
 msgstr "We are located at 123 Main Street, in the heart of the city."
 
-#: views/faq.php:75
+#: views/faq.php:70
 msgid "¿Ofrecen descuentos para estudiantes?"
 msgstr "Do you offer student discounts?"
 
-#: views/faq.php:80
+#: views/faq.php:75
 msgid ""
 "Sí, ofrecemos un descuento del 10% para estudiantes con una identificación "
 "válida."
 msgstr "Yes, we offer a 10% student discount with a valid ID."
 
-#: views/faq.php:87
+#: views/faq.php:82
 msgid "¿Tienen servicio de entrega a domicilio?"
 msgstr "Do you offer home delivery service?"
 
-#: views/faq.php:92
+#: views/faq.php:87
 msgid ""
 "Sí, ofrecemos servicio de entrega a domicilio dentro de la ciudad. Los "
 "pedidos se pueden realizar en línea o por teléfono."
@@ -466,102 +456,113 @@ msgstr ""
 "Yes, we offer home delivery service within the city. Orders can be placed "
 "online or by phone."
 
-#: views/home.php:47
+#: views/home.php:42
 msgid "Bienvenido a B-612"
 msgstr "Welcome to B-612"
 
-#: views/home.php:48
+#: views/home.php:43
 msgid "La mejor plataforma para encontrar y compartir libros."
 msgstr "The best platform for finding and sharing books."
 
-#: views/home.php:51
+#: views/home.php:45 views/login.php:53
+msgid "Iniciar sesión"
+msgstr "Login"
+
+#: views/home.php:46
 msgid "Registrarme"
 msgstr "Sign in"
 
-#: views/home.php:60
+#: views/home.php:55
 msgid "Explora"
 msgstr "Explore"
 
-#: views/home.php:61
+#: views/home.php:56
 msgid "Descubre una amplia variedad de libros en nuestra plataforma."
 msgstr "Discover a wide variety of books on our platform."
 
-#: views/home.php:64
+#: views/home.php:59
 msgid "Comparte"
 msgstr "Share"
 
-#: views/home.php:65
+#: views/home.php:60
 msgid "Comparte tus libros favoritos con otros usuarios."
 msgstr "Share your favorite books with other users."
 
-#: views/home.php:68
+#: views/home.php:63
 msgid "Conéctate"
 msgstr "Connect"
 
-#: views/home.php:69
+#: views/home.php:64
 msgid "Únete a una comunidad de amantes de los libros."
 msgstr "Join a community of book lovers."
 
-#: views/login.php:32 views/login.php:43
+#: views/login.php:28 views/login.php:39
 msgid "Inicio de sesión"
 msgstr "Login"
 
-#: views/login.php:49 views/profile.php:36 views/register.php:68
+#: views/login.php:45 views/profile.php:32 views/register.php:64
 msgid "Correo electrónico"
 msgstr "Email"
 
-#: views/login.php:53 views/register.php:72
+#: views/login.php:49 views/register.php:68
 msgid "Contraseña"
 msgstr "Password"
 
-#: views/profile.php:10
+#: views/profile.php:6
 msgid "Perfil"
 msgstr "Profile"
 
-#: views/profile.php:19
+#: views/profile.php:15
 msgid "Tu perfil"
 msgstr "Your profile"
 
-#: views/profile.php:24 views/register.php:56
+#: views/profile.php:20 views/register.php:52
 msgid "Nombre"
 msgstr "Name"
 
-#: views/profile.php:28 views/register.php:60
+#: views/profile.php:24 views/register.php:56
 msgid "Apellido"
 msgstr "Surname"
 
-#: views/profile.php:32 views/register.php:64
+#: views/profile.php:28 views/register.php:60
 msgid "Teléfono"
 msgstr "Phone number"
 
-#: views/profile.php:40
+#: views/profile.php:36
 msgid "Cambiar datos"
 msgstr "Edit data"
 
-#: views/profile.php:55
+#: views/profile.php:51
 msgid "No se pudo obtener el ID del usuario. Por favor, inicie sesión."
 msgstr "The user ID could not be obtained. Please log in."
 
-#: views/profile.php:74
+#: views/profile.php:70
 msgid "No se pudieron cargar los datos del usuario."
 msgstr "User data could not be loaded."
 
-#: views/register.php:32
+#: views/register.php:28
 msgid "Formulario de registro"
 msgstr "Registration form"
 
-#: views/register.php:44
+#: views/register.php:40
 msgid "Registro de usuario"
 msgstr "User registration"
 
-#: views/register.php:53
+#: views/register.php:49
 msgid ""
 "Por favor, complete el siguiente formulario para registrarse en nuestra web."
 msgstr "Please complete the following form to register on our website."
 
-#: views/register.php:76
+#: views/register.php:72
 msgid "Confirmar contraseña"
 msgstr "Confirm Password"
+
+#: views/register.php:76
+msgid "Registrarse"
+msgstr "Register"
+
+#~ msgid "Italiano"
+#~ msgstr "Italian"
 
 #~ msgid "Home"
 #~ msgstr "Home Page"

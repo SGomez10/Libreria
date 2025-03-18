@@ -1,8 +1,4 @@
 <?php
-// Iniciar la sesión (si no está iniciada)
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
 
 // Obtener el ID del usuario desde la sesión
 $userID = $_SESSION['user_id'] ?? null; // Asegúrate de que el ID del usuario esté almacenado en la sesión
